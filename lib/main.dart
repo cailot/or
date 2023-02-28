@@ -23,6 +23,28 @@ class MyApp extends StatelessWidget {
           PointerDeviceKind.unknown,
         },
       ),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.cyan,
+        // ignore: prefer_const_constructors
+        textTheme: TextTheme(
+          labelLarge: const TextStyle(
+            fontSize: 72,
+            fontWeight: FontWeight.bold,
+          ),
+          // ignore: prefer_const_constructors
+          labelMedium: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.w800,
+            color: Colors.blueGrey,
+          ),
+          labelSmall: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.blue.withOpacity(0.8),
+          ),
+        ),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -37,7 +59,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        body: const StudentRegister(),
+        body: const SingleChildScrollView(child: StudentRegister(),),
       ),
     );
   }

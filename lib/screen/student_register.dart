@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:orca/util/jae_utils.dart';
+import 'package:orca/widget/jae_datepicker.dart';
+
 
 class StudentRegister extends StatefulWidget {
   const StudentRegister({super.key});
@@ -14,103 +16,49 @@ class _StudentRegisterState extends State<StudentRegister> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.amber.shade300,
+     // color: Colors.amber.shade300,
+     margin: EdgeInsets.all(50),
       child: Column(
+
         children: [
-          const Text(
+          Text(
             'Student Enrolment',
+            style : Theme.of(context).textTheme.labelMedium,
           ),
           Row(
             children: [
-              DropdownButton(
-                items: const [
-                  DropdownMenuItem(
-                    value: 'VIC',
-                    child: Text(
-                      'Victoria',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'NSW',
-                    child: Text(
-                      'New South Wales',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'QLD',
-                    child: Text(
-                      'Queensland',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'WA',
-                    child: Text(
-                      'West Australia',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'SA',
-                    child: Text(
-                      'South Australia',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'ACT',
-                    child: Text(
-                      'ACT',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'NT',
-                    child: Text(
-                      'Northern Territory',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'TAS',
-                    child: Text(
-                      'Tasmania',
-                    ),
-                  ),
-                ],
-                onChanged: (String? value) {},
+
+              // state 
+              renderDropdownList(
+                label: '',
+                intialValue: stateDropdownValue,
+                menus: states,
+                changed: (String? val){
+                  setState(() {
+                    stateDropdownValue = val!;
+                  });
+                }
               ),
-              DropdownButton(
-                items: const [
-                  DropdownMenuItem(
-                    value: 'braybrook',
-                    child: Text(
-                      'Braybrook',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'boxhill',
-                    child: Text(
-                      'Box Hill',
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'balwyn',
-                    child: Text(
-                      'Balwyn',
-                    ),
-                  ),
-                ],
-                onChanged: (String? value) {},
+
+              // branch 
+              renderDropdownList(
+                label: '',
+                intialValue: branchDropdownValue,
+                menus: branches,
+                changed: (String? val){
+                  setState(() {
+                    branchDropdownValue = val!;
+                  });
+                }
               ),
-              OutlinedButton(
-                child: const Text(
-                  'New',
-                ),
-                onPressed: () {},
-              ),
-              OutlinedButton(
-                child: const Text(
-                  'Save',
-                ),
-                onPressed: () {},
-              ),
-            ],
+
+              // register button
+              renderButton(label: 'New', tapped: (){}),
+
+              // save button
+              renderButton(label: 'Save', tapped: (){}),
+
+              ],
           ),
           Container(
             decoration: BoxDecoration(
@@ -160,16 +108,29 @@ class _StudentRegisterState extends State<StudentRegister> {
                   ),
                   Row(
                     children: [
-                      renderTextFormField(
-                        label: 'Enrolment Date',
-                        onSaved: (val) {},
-                        validator: (val) {
-                          return null;
-                        },
-                      ),
-                      renderDropdownButton(
+                      
+                      //renderDatepicker(),
+                      const Expanded(child: DatePickerTextField()),
+
+
+
+
+
+
+
+                      renderDropdownList(
                         label: 'Grade',
+                        intialValue: gradeDropdownValue,
+                        menus: grades,
+                        changed: (String? val){
+                          setState(() {
+                            gradeDropdownValue = val!;
+                          });
+                        }
                       ),
+ 
+
+
                       renderTextFormField(
                         label: 'Contact No 1',
                         onSaved: (val) {},
@@ -284,45 +245,77 @@ class _StudentRegisterState extends State<StudentRegister> {
       ),
     );
   }
-
-  renderDropdownButton({
-    required String label,
+  
+  renderDropdownList({
+    String? label,
+    required String intialValue,
+    required List<String> menus,
+    required Function(String? val) changed,
   }) {
     return Expanded(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          Text(
+            label!,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          // ignore: sized_box_for_whitespace
-          DropdownButton(
-            value: gradeDropdownValue,
-            onChanged: (String? val) {
-              setState(
-                () {
-                  gradeDropdownValue = val!;
-                },
-              );
-            },
-            items: grades.map((String item) {
-              return DropdownMenuItem(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
+          InputDecorator(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder()
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                value: intialValue,
+                onChanged: changed,
+                items: menus.map((String item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
+
+
+
+renderButton({
+    required String label,
+    required Function() tapped,
+  }) {
+    return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white, 
+              backgroundColor: Colors.blue,
+              padding : const EdgeInsets.all(25,),
+              elevation: 0.8,
+              textStyle: const TextStyle(
+                fontSize: 22,
+              )
+            ),
+            onPressed: tapped,
+            child: Text(label),
+          );
+  }
+
+
+
+
+
+  String stateDropdownValue = 'Victoria';
+  var states = JaeState.values.map((e) => e.name).toList();
+
+  String branchDropdownValue = 'Braybrook';
+  var branches = JaeBranch.values.map((e) => e.name).toList();
+  
   String gradeDropdownValue = 'P1';
-  var grades = Grade.values.map((e) => e.name).toList();
+  var grades = JaeGrade.values.map((e) => e.name).toList();
 }
