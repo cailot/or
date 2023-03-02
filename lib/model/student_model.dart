@@ -1,7 +1,7 @@
 class StudentModel {
-  late int id;
+  late int? id;
 
-  late String firstName,
+  late String? firstName,
       lastName,
       grade,
       contactNo1,
@@ -14,6 +14,23 @@ class StudentModel {
       registerDate,
       enrolmentDate,
       endDate;
+
+  StudentModel({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.grade,
+    this.contactNo1,
+    this.contactNo2,
+    this.email,
+    this.address,
+    this.state,
+    this.branch,
+    this.memo,
+    this.registerDate,
+    this.enrolmentDate,
+    this.endDate
+  });
 
   StudentModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -30,4 +47,10 @@ class StudentModel {
         registerDate = json['registerDate'],
         enrolmentDate = json['enrolmentDate'],
         endDate = json['endDate'];
+
+  @override
+  String toString(){
+    return 'id=$id, firstName=$firstName, lastName=$lastName, grade=$grade, contactNo1=$contactNo1, contactNo2=$contactNo2, email=$email, address=$address, state=$state, branch=$branch, memo=$memo, registerDate=$registerDate, enrolmentDate=$enrolmentDate, endDate=$endDate';
+  }
+
 }

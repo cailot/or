@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:orca/model/student_model.dart';
 import 'package:orca/util/jae_utils.dart';
+import 'package:orca/widget/jae_button.dart';
 import 'package:orca/widget/jae_datepicker.dart';
+import 'package:orca/widget/jae_textarea.dart';
+import 'package:orca/widget/jae_textfield.dart';
+import 'package:orca/widget/jae_dropdown.dart';
 
 class StudentRegister extends StatefulWidget {
   const StudentRegister({super.key});
@@ -10,13 +15,14 @@ class StudentRegister extends StatefulWidget {
 }
 
 class _StudentRegisterState extends State<StudentRegister> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  var model = StudentModel();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // color: Colors.amber.shade300,
-      margin: EdgeInsets.all(50),
+      margin: const EdgeInsets.all(50),
       child: Column(
         children: [
           Text(
@@ -29,40 +35,54 @@ class _StudentRegisterState extends State<StudentRegister> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // state
-                renderDropdownList(
-                    label: '',
-                    intialValue: stateDropdownValue,
-                    menus: states,
-                    changed: (String? val) {
-                      setState(() {
-                        stateDropdownValue = val!;
-                      });
-                    }),
+                JaeDropdownList(
+                  label: '',
+                  intialValue: stateDropdownValue,
+                  menus: states,
+                  changed: (String? val) {
+                    setState(() {
+                      stateDropdownValue = val!;
+                    });
+                  },
+                ),
                 const SizedBox(
                   width: 80,
                 ),
                 // branch
-                renderDropdownList(
-                    label: '',
-                    intialValue: branchDropdownValue,
-                    menus: branches,
-                    changed: (String? val) {
-                      setState(() {
-                        branchDropdownValue = val!;
-                      });
-                    }),
+                JaeDropdownList(
+                  label: '',
+                  intialValue: branchDropdownValue,
+                  menus: branches,
+                  changed: (String? val) {
+                    setState(() {
+                      branchDropdownValue = val!;
+                    });
+                  },
+                ),
                 const SizedBox(
                   width: 80,
                 ),
-
                 // register button
-                renderButton(label: 'New', tapped: () {}),
+                JaeButton(
+                  label: 'New',
+                  tapped: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                    }
+                    print(model);
+                  },
+                ),
                 const SizedBox(
                   width: 80,
                 ),
-
-                // save button
-                renderButton(label: 'Save', tapped: () {}),
+                // clear button
+                JaeButton(
+                  label: 'Clear',
+                  tapped: () {
+                    //print(model);
+                    _formKey.currentState?.reset();
+                  },
+                ),
               ],
             ),
           ),
@@ -77,7 +97,7 @@ class _StudentRegisterState extends State<StudentRegister> {
               10,
             ),
             child: Form(
-              key: formKey,
+              key: _formKey,
               child: Column(
                 children: [
                   Padding(
@@ -89,40 +109,60 @@ class _StudentRegisterState extends State<StudentRegister> {
                     ),
                     child: Row(
                       children: [
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'Branch',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.branch = val;
+                          },
                           validator: (val) {
+                            //   if(val==null || val.isEmpty){
+                            //     return 'Enter Branch';
+                            //   }
                             return null;
                           },
                         ),
                         const SizedBox(
                           width: 30,
                         ),
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'ID',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            //model.id = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
                         const SizedBox(
                           width: 30,
                         ),
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'First Name',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.firstName = val;
+                          },
                           validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Enter First Name';
+                            }
                             return null;
                           },
                         ),
                         const SizedBox(
                           width: 30,
                         ),
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'Last Name',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.lastName = val;
+                          },
                           validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Enter Last Name';
+                            }
                             return null;
                           },
                         ),
@@ -139,26 +179,35 @@ class _StudentRegisterState extends State<StudentRegister> {
                     child: Row(
                       children: [
                         //renderDatepicker(),
-                        const Expanded(child: DatePickerTextField()),
+                        const Expanded(
+                          child: JaeDatePicker(),
+                        ),
                         const SizedBox(
                           width: 30,
                         ),
-                        renderDropdownList(
-                            label: 'Grade',
-                            intialValue: gradeDropdownValue,
-                            menus: grades,
-                            changed: (String? val) {
-                              setState(() {
-                                gradeDropdownValue = val!;
-                              });
-                            }),
+                        JaeDropdownList(
+                          label: 'Grade',
+                          intialValue: gradeDropdownValue,
+                          menus: grades,
+                          changed: (String? val) {
+                            setState(() {
+                              gradeDropdownValue = val!;
+                            });
+                          },
+                        ),
                         const SizedBox(
                           width: 30,
                         ),
-                        renderTextFormField(
+
+                        JaeTextField(
                           label: 'Contact No 1',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.contactNo1 = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
@@ -174,18 +223,30 @@ class _StudentRegisterState extends State<StudentRegister> {
                     ),
                     child: Row(
                       children: [
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'Contact No 2',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.contactNo1 = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
-                        const SizedBox(width: 30,),
-                        renderTextFormField(
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        JaeTextField(
                           label: 'Email',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.contactNo1 = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
@@ -194,17 +255,18 @@ class _StudentRegisterState extends State<StudentRegister> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                      left: 10,
-                      right: 10,
-                      bottom: 15,
-                      top: 15
-                    ),
+                        left: 10, right: 10, bottom: 15, top: 15),
                     child: Row(
                       children: [
-                        renderTextFormField(
+                        JaeTextField(
                           label: 'Address',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.contactNo1 = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
@@ -220,10 +282,15 @@ class _StudentRegisterState extends State<StudentRegister> {
                     ),
                     child: Row(
                       children: [
-                        renderTextFormArea(
+                        JaeTextArea(
                           label: 'Memo',
-                          onSaved: (val) {},
+                          onSaved: (val) {
+                            model.memo = val;
+                          },
                           validator: (val) {
+                            // if(val==null || val.isEmpty){
+                            //   return 'Enter First Name';
+                            // }
                             return null;
                           },
                         ),
@@ -236,135 +303,6 @@ class _StudentRegisterState extends State<StudentRegister> {
           ),
         ],
       ),
-    );
-  }
-
-  renderTextFormField({
-    required String label,
-    required FormFieldSetter onSaved,
-    required FormFieldValidator validator,
-  }) {
-    return Expanded(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          // ignore: sized_box_for_whitespace
-          TextFormField(
-            decoration: const InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: Colors.blueGrey,
-                ),
-              ),
-            ),
-            onSaved: onSaved,
-            validator: validator,
-          ),
-        ],
-      ),
-    );
-  }
-
-  renderTextFormArea({
-    required String label,
-    required FormFieldSetter onSaved,
-    required FormFieldValidator validator,
-  }) {
-    return Expanded(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          // ignore: sized_box_for_whitespace
-          TextFormField(
-            decoration: const InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: Colors.blueGrey,
-                ),
-              ),
-            ),
-            maxLines: 3,
-            onSaved: onSaved,
-            validator: validator,
-          ),
-        ],
-      ),
-    );
-  }
-
-  renderDropdownList({
-    String? label,
-    required String intialValue,
-    required List<String> menus,
-    required Function(String? val) changed,
-  }) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label!,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          InputDecorator(
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                value: intialValue,
-                onChanged: changed,
-                items: menus.map((String item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  renderButton({
-    required String label,
-    required Function() tapped,
-  }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.all(
-            25,
-          ),
-          elevation: 0.8,
-          textStyle: const TextStyle(
-            fontSize: 22,
-          )),
-      onPressed: tapped,
-      child: Text(label),
     );
   }
 
