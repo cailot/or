@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:orca/screen/student_register.dart';
+import 'package:orca/service/api_service.dart';
 
 void main() {
+  ApiService().getStudentCount();
   runApp(const MyApp());
 }
 
