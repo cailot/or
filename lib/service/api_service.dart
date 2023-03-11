@@ -29,7 +29,8 @@ class ApiService {
       body: jsonEncode(model.toJson()),
     );
 
-    print('Response Code : ${response.statusCode} '
+    print(
+        'Sent : ${jsonEncode(model.toJson())} \n Response Code : ${response.statusCode} '
         //with     ${jsonDecode(response.body)}'
         );
 

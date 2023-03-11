@@ -4,7 +4,7 @@ class JaeButton extends StatelessWidget {
   final String label;
   final Function() tapped;
 
-  const JaeButton({ 
+  const JaeButton({
     required this.label,
     required this.tapped,
   });
@@ -13,15 +13,18 @@ class JaeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.all(
-            25,
-          ),
-          elevation: 0.8,
-          textStyle: const TextStyle(
-            fontSize: 22,
-          )),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        padding: const EdgeInsets.all(
+          5,
+        ),
+        elevation: 0.8,
+        textStyle: const TextStyle(
+          fontSize: 18,
+        ),
+        minimumSize: const Size(80, 50),
+        maximumSize: const Size(80, 50),
+      ),
       onPressed: tapped,
       child: Text(label),
     );

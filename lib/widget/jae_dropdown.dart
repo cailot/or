@@ -5,8 +5,8 @@ class JaeDropdownList extends StatelessWidget {
   final String intialValue;
   final List<String> menus;
   final Function(String? val) changed;
-  
-  const JaeDropdownList({ 
+
+  const JaeDropdownList({
     required this.label,
     required this.intialValue,
     required this.menus,
@@ -26,7 +26,13 @@ class JaeDropdownList extends StatelessWidget {
             ),
           ),
           InputDecorator(
-            decoration: const InputDecoration(border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(
+                vertical: -1,
+                horizontal: 15,
+              ),
+            ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton(
                 value: intialValue,
@@ -37,6 +43,7 @@ class JaeDropdownList extends StatelessWidget {
                     child: Text(item),
                   );
                 }).toList(),
+                //itemHeight: 50,
               ),
             ),
           ),

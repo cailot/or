@@ -2,10 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:orca/screen/student_register.dart';
-import 'package:orca/service/api_service.dart';
+//import 'package:orca/service/api_service.dart';
 
 void main() {
-  ApiService().getStudentCount();
+  //ApiService().getStudentCount();
   runApp(const MyApp());
 }
 
@@ -60,8 +60,11 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
           ),
+          leading: Image.asset('images/logo.png'),
         ),
-        body: const SingleChildScrollView(child: StudentRegister(),),
+        body: const SingleChildScrollView(
+          child: StudentRegister(),
+        ),
       ),
     );
   }
