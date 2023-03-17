@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class JaeFixedTextField extends StatelessWidget {
   final String label;
-  final String initial;
   final FormFieldSetter onSaved;
   final FormFieldValidator validator;
+  TextEditingController? controller;
 
-  const JaeFixedTextField({
+  JaeFixedTextField({
     required this.label,
     required this.onSaved,
     required this.validator,
-    required this.initial,
+    this.controller,
   });
 
   @override
@@ -33,10 +33,13 @@ class JaeFixedTextField extends StatelessWidget {
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
-            initialValue: initial,
+            style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                color: Color.fromRGBO(0, 0, 153, 1.0)),
             readOnly: true,
             onSaved: onSaved,
             validator: validator,
+            controller: controller,
           ),
         ],
       ),

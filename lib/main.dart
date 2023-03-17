@@ -47,25 +47,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.blueGrey.shade900,
-          elevation: 2,
-          title: const Text(
-            'James An College',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          leading: Image.asset('images/logo.png'),
-        ),
-        body: const SingleChildScrollView(
-          child: StudentRegister(),
-        ),
-      ),
+      home: const StudentRegister(),
     );
   }
 }

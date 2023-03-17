@@ -1,55 +1,54 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:orca/model/student_model.dart';
-import 'package:orca/screen/student_details.dart';
 import 'package:orca/util/jae_utils.dart';
 import 'package:orca/widget/jae_button.dart';
 import 'package:orca/widget/jae_datepicker.dart';
-import 'package:orca/widget/jae_fixed_textfield.dart';
 import 'package:orca/widget/jae_textarea.dart';
 import 'package:orca/widget/jae_textfield.dart';
 import 'package:orca/widget/jae_dropdown.dart';
 
 import 'package:orca/service/api_service.dart';
 
-class StudentRegister extends StatefulWidget {
-  const StudentRegister({super.key});
+class StudentDetails extends StatefulWidget {
+  late final StudentModel model;
+
+  // ignore: use_key_in_widget_constructors
+  StudentDetails({required this.model});
 
   @override
-  State<StudentRegister> createState() => _StudentRegisterState();
+  State<StudentDetails> createState() => _StudentDetailsState();
 }
 
-class _StudentRegisterState extends State<StudentRegister> {
+class _StudentDetailsState extends State<StudentDetails> {
   var _formKey;
-  var model;
-  var _idController,
-      _firstNameController,
-      _lastNameController,
-      _contact1Controller,
-      _contact2Controller,
-      _emailController,
-      _addressController,
-      _memoController;
-  var _today; // = DateTime.now();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _contact1Controller = TextEditingController();
+  final TextEditingController _contact2Controller = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-    model = StudentModel();
-    _idController = TextEditingController();
-    _firstNameController = TextEditingController();
-    _lastNameController = TextEditingController();
-    _contact1Controller = TextEditingController();
-    _contact2Controller = TextEditingController();
-    _emailController = TextEditingController();
-    _addressController = TextEditingController();
-    _memoController = TextEditingController();
-    _today = DateTime.now();
+    _idController.text = widget.model.id.toString();
+    _firstNameController.text = widget.model.firstName.toString();
+    _lastNameController.text = widget.model.lastName.toString();
+    _contact1Controller.text = widget.model.contactNo1.toString();
+    _contact2Controller.text = widget.model.contactNo2.toString();
+    _emailController.text = widget.model.email.toString();
+    _addressController.text = widget.model.address.toString();
+    _memoController.text = widget.model.memo.toString();
   }
 
   @override
   Widget build(BuildContext context) {
+    //print(widget.model);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -63,13 +62,7 @@ class _StudentRegisterState extends State<StudentRegister> {
             fontWeight: FontWeight.w400,
           ),
         ),
-        //leading: Image.asset('images/logo.png'),
-        leading: IconButton(
-          icon: Image.asset('images/logo.png'),
-          onPressed: () {
-            // Handle button press
-          },
-        ),
+        leading: Image.asset('images/logo.png'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -78,7 +71,7 @@ class _StudentRegisterState extends State<StudentRegister> {
           child: Column(
             children: [
               Text(
-                'Student Enrolment',
+                'Student Details',
                 style: Theme.of(context).textTheme.labelMedium,
               ),
               Container(
@@ -88,49 +81,53 @@ class _StudentRegisterState extends State<StudentRegister> {
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // state
+
                     JaeDropdownList(
                       label: '',
-                      intialValue: stateDropdownValue,
+                      intialValue: widget.model.state.toString(),
                       menus: states,
                       changed: (String? val) {
-                        setState(() {
-                          stateDropdownValue = val!;
-                          model.state = stateDropdownValue;
-                        });
+                        setState(
+                          () {
+                            widget.model.state = val;
+                          },
+                        );
                       },
                     ),
+
                     const SizedBox(
                       width: 80,
                     ),
                     // branch
                     JaeDropdownList(
                       label: '',
-                      intialValue: branchDropdownValue,
+                      intialValue: widget.model.branch.toString(),
                       menus: branches,
                       changed: (String? val) {
-                        setState(() {
-                          branchDropdownValue = val!;
-                          model.branch = branchDropdownValue;
-                        });
+                        setState(
+                          () {
+                            widget.model.branch = val;
+                          },
+                        );
                       },
                     ),
                     const SizedBox(
                       width: 80,
                     ),
+
                     // register button
                     JaeButton(
-                      label: 'New',
+                      label: 'Update',
                       tapped: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
                         }
                         //print(model);
                         Future<StudentModel> updated =
-                            ApiService().addStudent(model);
-                        model = await updated;
-                        // ignore: use_build_context_synchronously
+                            ApiService().addStudent(widget.model);
+                        //model = await updated;
                         _showSuccessDialogue(context);
-                        _idController.text = model.id.toString();
+                        //_idController.text = widget.model.id.toString();
                       },
                     ),
                     const SizedBox(
@@ -140,6 +137,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                     JaeButton(
                       label: 'Clear',
                       tapped: () {
+                        //print('before - ${widget.model}');
                         _formKey.currentState?.reset();
                         setState(() {
                           _idController.text = '';
@@ -150,12 +148,9 @@ class _StudentRegisterState extends State<StudentRegister> {
                           _emailController.text = '';
                           _addressController.text = '';
                           _memoController.text = '';
-                          stateDropdownValue =
-                              JaeState.values[0].name.toString();
-                          branchDropdownValue =
-                              JaeBranch.values[0].name.toString();
-                          gradeDropdownValue =
-                              JaeGrade.values[0].name.toString();
+                          widget.model.state = JaeState.values[0].name;
+                          widget.model.branch = JaeBranch.values[0].name;
+                          widget.model.grade = JaeGrade.values[0].name;
                         });
                       },
                     ),
@@ -163,12 +158,6 @@ class _StudentRegisterState extends State<StudentRegister> {
                 ),
               ),
               Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 5,
-                    color: Colors.cyan.shade500,
-                  ),
-                ),
                 padding: const EdgeInsets.all(
                   10,
                 ),
@@ -185,17 +174,16 @@ class _StudentRegisterState extends State<StudentRegister> {
                         ),
                         child: Row(
                           children: [
-                            JaeFixedTextField(
+                            JaeTextField(
                               controller: _idController,
                               label: 'ID',
-                              //initial: '',
                               onSaved: (val) {
-                                val ?? model.id;
+                                widget.model.id = val;
                               },
                               validator: (val) {
-                                // if(val==null || val.isEmpty){
-                                //   return 'Enter First Name';
-                                // }
+                                if (val == null || val.isEmpty) {
+                                  return 'Enter ID';
+                                }
                                 return null;
                               },
                             ),
@@ -206,7 +194,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _firstNameController,
                               label: 'First Name',
                               onSaved: (val) {
-                                model.firstName = val;
+                                widget.model.firstName = val;
                               },
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
@@ -222,7 +210,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _lastNameController,
                               label: 'Last Name',
                               onSaved: (val) {
-                                model.lastName = val;
+                                widget.model.lastName = val;
                               },
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
@@ -236,13 +224,14 @@ class _StudentRegisterState extends State<StudentRegister> {
                             ),
                             JaeDropdownList(
                               label: 'Grade',
-                              intialValue: gradeDropdownValue,
+                              intialValue: widget.model.grade.toString(),
                               menus: grades,
                               changed: (String? val) {
-                                setState(() {
-                                  gradeDropdownValue = val!;
-                                  model.grade = gradeDropdownValue;
-                                });
+                                setState(
+                                  () {
+                                    widget.model.grade = val;
+                                  },
+                                );
                               },
                             ),
                           ],
@@ -257,25 +246,27 @@ class _StudentRegisterState extends State<StudentRegister> {
                         ),
                         child: Row(
                           children: [
-                            //renderDatepicker(),
                             JaeDatepicker(
                               label: 'Enrolment Date',
                               onSaved: (val) {
-                                model.enrolmentDate = JaeUtil.dateFormat(val);
+                                widget.model.enrolmentDate =
+                                    JaeUtil.dateFormat(val);
                               },
                               validator: (val) => null,
-                              selected: _today,
+                              selected: (widget.model.enrolmentDate == null)
+                                  ? DateFormat('yyyy-MM-dd')
+                                      .parse(DateTime.now().toString())
+                                  : DateFormat('yyyy-MM-dd').parse(
+                                      widget.model.enrolmentDate.toString()),
                             ),
-
                             const SizedBox(
                               width: 30,
                             ),
-
                             JaeTextField(
                               controller: _contact1Controller,
                               label: 'Contact No 1',
                               onSaved: (val) {
-                                model.contactNo1 = val;
+                                widget.model.contactNo1 = val;
                               },
                               validator: (val) {
                                 // if(val==null || val.isEmpty){
@@ -291,7 +282,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _contact2Controller,
                               label: 'Contact No 2',
                               onSaved: (val) {
-                                model.contactNo2 = val;
+                                widget.model.contactNo2 = val;
                               },
                               validator: (val) {
                                 // if(val==null || val.isEmpty){
@@ -316,7 +307,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _emailController,
                               label: 'Email',
                               onSaved: (val) {
-                                model.email = val;
+                                widget.model.email = val;
                               },
                               validator: (val) {
                                 // if(val==null || val.isEmpty){
@@ -332,7 +323,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _addressController,
                               label: 'Address',
                               onSaved: (val) {
-                                model.address = val;
+                                widget.model.address = val;
                               },
                               validator: (val) {
                                 // if(val==null || val.isEmpty){
@@ -357,7 +348,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               controller: _memoController,
                               label: 'Memo',
                               onSaved: (val) {
-                                model.memo = val;
+                                widget.model.memo = val;
                               },
                               validator: (val) {
                                 // if(val==null || val.isEmpty){
@@ -383,16 +374,12 @@ class _StudentRegisterState extends State<StudentRegister> {
   var states = JaeState.values
       .map((e) => e.name.toString().replaceAll('_', ' '))
       .toList();
-  String stateDropdownValue = JaeState.values[0].name.toString(); //'Victoria';
 
   var branches = JaeBranch.values
       .map((e) => e.name.toString().replaceAll('_', ' '))
       .toList();
-  String branchDropdownValue =
-      JaeBranch.values[0].name.toString(); //'Braybrook';
 
   var grades = JaeGrade.values.map((e) => e.name).toList();
-  String gradeDropdownValue = JaeGrade.values[0].name.toString(); //'P2';
 
   _showSuccessDialogue(BuildContext context) {
     AwesomeDialog(
@@ -412,44 +399,11 @@ class _StudentRegisterState extends State<StudentRegister> {
         fontSize: 20,
         fontWeight: FontWeight.w500,
       ),
-      btnOkOnPress: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) {
-              return StudentDetails(
-                model: model,
-              );
-            },
-          ),
-        );
-      },
+      btnOkOnPress: () {},
       btnCancelOnPress: () {},
       btnOkText: 'Go',
       btnCancelText: 'Stay',
       btnCancelColor: Colors.lightGreen,
     ).show();
-  }
-
-  _showErrorDialogue(BuildContext context) {
-    AwesomeDialog(
-            context: context,
-            dialogType: DialogType.error,
-            animType: AnimType.topSlide,
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 2,
-            ),
-            width: 500,
-            dismissOnTouchOutside: false,
-            showCloseIcon: true,
-            desc: '\nStudent Registeration is failed\n',
-            descTextStyle: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-            btnOkIcon: Icons.cancel,
-            btnOkColor: Colors.red,
-            btnOkOnPress: () {})
-        .show();
   }
 }

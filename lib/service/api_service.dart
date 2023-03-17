@@ -29,14 +29,15 @@ class ApiService {
       body: jsonEncode(model.toJson()),
     );
 
+/*
     print(
         'Sent : ${jsonEncode(model.toJson())} \n Response Code : ${response.statusCode} '
         //with     ${jsonDecode(response.body)}'
         );
-
+*/
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
-      print('API response: $responseData');
+      //print('API response: $responseData');
       return StudentModel.fromJson(responseData);
     } else {
       final errorMsg = jsonDecode(response.body)['message'];

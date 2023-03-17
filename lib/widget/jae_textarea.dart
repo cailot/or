@@ -4,11 +4,15 @@ class JaeTextArea extends StatelessWidget {
   final String label;
   final FormFieldSetter onSaved;
   final FormFieldValidator validator;
+  //String? initial;
+  TextEditingController? controller;
 
-  const JaeTextArea({
+  JaeTextArea({
     required this.label,
     required this.onSaved,
     required this.validator,
+    //this.initial,
+    this.controller,
   });
 
   @override
@@ -34,6 +38,8 @@ class JaeTextArea extends StatelessWidget {
             onSaved: onSaved,
             validator: validator,
             maxLines: 3,
+            //initialValue: initial,
+            controller: controller,
           ),
         ],
       ),

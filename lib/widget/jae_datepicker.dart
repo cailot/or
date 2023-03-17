@@ -6,11 +6,13 @@ class JaeDatepicker extends StatefulWidget {
   final String label;
   final FormFieldSetter onSaved;
   final FormFieldValidator validator;
+  DateTime? selected;
 
-  const JaeDatepicker({
+  JaeDatepicker({
     required this.label,
     required this.onSaved,
     required this.validator,
+    this.selected,
   });
 
   @override
@@ -19,17 +21,19 @@ class JaeDatepicker extends StatefulWidget {
 
 class _JaeDatepickerState extends State<JaeDatepicker> {
   late TextEditingController controller;
-  DateTime? _selected;
+  //DateTime? _selected;
 
   @override
   void initState() {
     super.initState();
-    final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    controller = TextEditingController(text: today);
+    final display = DateFormat('dd/MM/yyyy').format(widget.selected!);
+    controller = TextEditingController(text: display);
   }
 
   @override
   Widget build(BuildContext context) {
+    final display = DateFormat('dd/MM/yyyy').format(widget.selected!);
+    controller.text = display;
     return Expanded(
       child: Column(
         children: [
@@ -54,33 +58,19 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
             onSaved: widget.onSaved,
             validator: widget.validator,
             onTap: () async {
-              /*
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _selected ?? DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime.now(),
-              );
-              if (picked != null) {
-                setState(() {
-                  _selected = picked;
-                  controller.text =
-                      '${_selected?.day}/${_selected?.month}/${_selected?.year}';
-                });
-              }*/
               var results = await showCalendarDatePicker2Dialog(
                 context: context,
                 config: CalendarDatePicker2WithActionButtonsConfig(),
                 dialogSize: const Size(325, 400),
                 borderRadius: BorderRadius.circular(5),
-                initialValue: [_selected ?? DateTime.now()],
+                initialValue: [widget.selected ?? DateTime.now()],
               );
               if (results != null) {
-                setState(() {
-                  _selected = results.first;
-                  controller.text =
-                      '${_selected?.day}/${_selected?.month}/${_selected?.year}';
-                });
+                //setState(() {
+                widget.selected = results.first;
+                controller.text =
+                    '${widget.selected?.day}/${widget.selected?.month}/${widget.selected?.year}';
+                //});
               }
             },
           ),

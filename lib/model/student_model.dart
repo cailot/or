@@ -1,7 +1,7 @@
 class StudentModel {
-  late int? id;
+  int? id;
 
-  late String? firstName,
+  String? firstName,
       lastName,
       grade,
       contactNo1,
