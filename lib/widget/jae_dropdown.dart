@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class JaeDropdownList extends StatelessWidget {
   final String label;
-  final String intialValue;
+  final String value;
   final List<String> menus;
   final Function(String? val) changed;
 
   const JaeDropdownList({
     required this.label,
-    required this.intialValue,
+    required this.value,
     required this.menus,
     required this.changed,
   });
@@ -34,16 +34,23 @@ class JaeDropdownList extends StatelessWidget {
               ),
             ),
             child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                value: intialValue,
-                onChanged: changed,
-                items: menus.map((String item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                //itemHeight: 50,
+              child: Expanded(
+                child: DropdownButton(
+                  value: value,
+                  isExpanded: true,
+                  onChanged: changed,
+                  items: menus.map((String item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
+                  //itemHeight: 50,
+                ),
               ),
             ),
           ),

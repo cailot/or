@@ -23,7 +23,7 @@ class JaeButton extends StatelessWidget {
           fontSize: 18,
         ),
         minimumSize: const Size(80, 50),
-        maximumSize: const Size(80, 50),
+        maximumSize: const Size(100, 50),
       ),
       onPressed: tapped,
       child: Text(label),

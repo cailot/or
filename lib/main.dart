@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:orca/model/student_model.dart';
+import 'package:orca/screen/student_details.dart';
+import 'package:orca/screen/student_list.dart';
 import 'package:orca/screen/student_register.dart';
 //import 'package:orca/service/api_service.dart';
 
@@ -47,7 +50,65 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const StudentRegister(),
+      home: //const StudentRegister(),
+          //StudentDetails(model: StudentModel()),
+          DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blueGrey.shade900,
+            elevation: 20,
+            automaticallyImplyLeading: false,
+            titleSpacing: 5,
+            title: const Text(
+              'James An College',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            leading: Row(children: [
+              const SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                icon: Image.asset('images/logo.png'),
+                onPressed: () {
+                  print('Top icon');
+                },
+              ),
+            ]),
+            bottom: const TabBar(
+              labelColor: Colors.lightBlue,
+              unselectedLabelColor: Colors.white,
+              indicatorSize: TabBarIndicatorSize.tab,
+              tabs: [
+                Tab(
+                  text: 'Enrolment',
+                  icon: Icon(Icons.app_registration_outlined),
+                ),
+                Tab(
+                  text: 'Details',
+                  icon: Icon(Icons.school_outlined),
+                ),
+                Tab(
+                  text: 'List',
+                  icon: Icon(Icons.list_outlined),
+                ),
+              ],
+            ),
+          ),
+          //JaeTop(),
+          body: TabBarView(
+            children: [
+              StudentRegister(),
+              StudentDetails(model: StudentModel()),
+              StudentList(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

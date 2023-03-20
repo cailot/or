@@ -31,10 +31,18 @@ enum JaeState {
 
 enum JaeBranch { Braybrook, Kew, Doncaster, Box_Hill }
 
+enum JaeActive { Current, Stopped }
+
 class JaeUtil {
   static String dateFormat(String str) {
     DateTime date = DateFormat('dd/MM/yyyy').parse(str);
     String formatted = DateFormat('yyyy-MM-dd').format(date);
+    return formatted;
+  }
+
+  static String fromJavaToFlutter(String str) {
+    DateTime date = DateFormat('yyyy-MM-dd').parse(str);
+    String formatted = DateFormat('dd/MM/yyyy').format(date);
     return formatted;
   }
 }

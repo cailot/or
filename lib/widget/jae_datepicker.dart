@@ -47,32 +47,35 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
               ),
             ],
           ),
-          TextFormField(
-            controller: controller,
-            //initialValue: today,
-            decoration: const InputDecoration(
-              hintText: 'Select Date',
-              border: OutlineInputBorder(),
+          SingleChildScrollView(
+            //scrollDirection: Axis.horizontal,
+            child: TextFormField(
+              controller: controller,
+              //initialValue: today,
+              decoration: const InputDecoration(
+                hintText: 'Select Date',
+                border: OutlineInputBorder(),
+              ),
+              readOnly: true,
+              onSaved: widget.onSaved,
+              validator: widget.validator,
+              onTap: () async {
+                var results = await showCalendarDatePicker2Dialog(
+                  context: context,
+                  config: CalendarDatePicker2WithActionButtonsConfig(),
+                  dialogSize: const Size(325, 400),
+                  borderRadius: BorderRadius.circular(5),
+                  initialValue: [widget.selected ?? DateTime.now()],
+                );
+                if (results != null) {
+                  //setState(() {
+                  widget.selected = results.first;
+                  controller.text =
+                      '${widget.selected?.day}/${widget.selected?.month}/${widget.selected?.year}';
+                  //});
+                }
+              },
             ),
-            readOnly: true,
-            onSaved: widget.onSaved,
-            validator: widget.validator,
-            onTap: () async {
-              var results = await showCalendarDatePicker2Dialog(
-                context: context,
-                config: CalendarDatePicker2WithActionButtonsConfig(),
-                dialogSize: const Size(325, 400),
-                borderRadius: BorderRadius.circular(5),
-                initialValue: [widget.selected ?? DateTime.now()],
-              );
-              if (results != null) {
-                //setState(() {
-                widget.selected = results.first;
-                controller.text =
-                    '${widget.selected?.day}/${widget.selected?.month}/${widget.selected?.year}';
-                //});
-              }
-            },
           ),
         ],
       ),
