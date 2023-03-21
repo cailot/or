@@ -1,5 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:excel/excel.dart';
 import 'package:orca/model/student_model.dart';
 import 'package:orca/screen/student_details.dart';
 import 'package:orca/util/jae_utils.dart';
@@ -11,6 +13,7 @@ import 'package:orca/model/list_condition_model.dart';
 import 'package:orca/widget/jae_dropdown.dart';
 
 import 'package:orca/service/api_service.dart';
+import 'package:path_provider/path_provider.dart';
 
 class StudentList extends StatefulWidget {
   const StudentList({super.key});
@@ -208,7 +211,9 @@ class _StudentListState extends State<StudentList> {
                   ),
                   JaeButton(
                     label: 'Download',
-                    tapped: () {},
+                    tapped: () {
+                      _downloadStudentList(context);
+                    },
                   ),
                   SizedBox(
                     // width: 10,
@@ -381,6 +386,112 @@ class _StudentListState extends State<StudentList> {
     if (sts.isEmpty) {
       _showIdWarningDialogue(context);
     }
+  }
+
+  Future<void> _downloadStudentList(BuildContext context) async {
+    final excel = Excel.createExcel();
+    final sheet = excel[excel.getDefaultSheet() as String];
+
+    sheet.setColAutoFit(7);
+    sheet.setColAutoFit(8);
+    sheet.setColAutoFit(9);
+    sheet.setColAutoFit(10);
+
+    var cellStyle = CellStyle(
+      bold: true,
+      fontColorHex: '#abdbe3',
+      backgroundColorHex: '#154c79',
+      horizontalAlign: HorizontalAlign.Center,
+    );
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
+        "ID";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value =
+        "First Name";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value =
+        "Last Name";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value =
+        "Grade";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value =
+        "State";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value =
+        "Branch";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 0)).value =
+        "Enrolment Date";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0)).value =
+        "Contact No1";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: 0)).value =
+        "Contact No2";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: 0)).value =
+        "Email";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: 0)).value =
+        "Address";
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: 0)).value =
+        "Start Date";
+
+    for (int i = 0; i < 12; i++) {
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0))
+          .cellStyle = cellStyle;
+    }
+
+    for (int i = 0; i < students.length; i++) {
+      var std = students[i];
+      var id = std['id'];
+      var firstName = std['firstName'];
+      var lastName = std['lastName'];
+      var grade = std['grade'];
+      var state = std['state'];
+      var branch = std['branch'];
+      var enrolment = std['enrolmentDate'];
+      var con1 = std['contactNo1'];
+      var con2 = std['contactNo2'];
+      var email = std['email'];
+      var address = std['address'];
+      var start = std['startDate'];
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: (i + 1)))
+          .value = id;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: (i + 1)))
+          .value = firstName;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: (i + 1)))
+          .value = lastName;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: (i + 1)))
+          .value = grade;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: (i + 1)))
+          .value = state;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: (i + 1)))
+          .value = branch;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: (i + 1)))
+          .value = enrolment;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: (i + 1)))
+          .value = con1;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: (i + 1)))
+          .value = con2;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: (i + 1)))
+          .value = email;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: (i + 1)))
+          .value = address;
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: (i + 1)))
+          .value = start;
+    }
+
+    excel.save(fileName: 'Jin.xlsx');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Excel file downloaded successfully.'),
+      ),
+    );
   }
 
   _showIdWarningDialogue(BuildContext context) {
