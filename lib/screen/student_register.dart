@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:orca/model/student_model.dart';
@@ -20,32 +22,32 @@ class StudentRegister extends StatefulWidget {
 }
 
 class _StudentRegisterState extends State<StudentRegister> {
-  var _formKey;
-  var model;
-  var _idController,
-      _firstNameController,
-      _lastNameController,
-      _contact1Controller,
-      _contact2Controller,
-      _emailController,
-      _addressController,
-      _memoController;
-  var _today; // = DateTime.now();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  StudentModel model = StudentModel();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _contact1Controller = TextEditingController();
+  final TextEditingController _contact2Controller = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
+  final DateTime _today = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _formKey = GlobalKey<FormState>();
-    model = StudentModel();
-    _idController = TextEditingController();
-    _firstNameController = TextEditingController();
-    _lastNameController = TextEditingController();
-    _contact1Controller = TextEditingController();
-    _contact2Controller = TextEditingController();
-    _emailController = TextEditingController();
-    _addressController = TextEditingController();
-    _memoController = TextEditingController();
-    _today = DateTime.now();
+    //_formKey = GlobalKey<FormState>();
+    //model = StudentModel();
+    // _idController = TextEditingController();
+    // _firstNameController = TextEditingController();
+    // _lastNameController = TextEditingController();
+    // _contact1Controller = TextEditingController();
+    // _contact2Controller = TextEditingController();
+    // _emailController = TextEditingController();
+    // _addressController = TextEditingController();
+    // _memoController = TextEditingController();
+    // _today = DateTime.now();
   }
 
   @override
@@ -106,7 +108,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                         _formKey.currentState!.save();
                       }
                       var updated = await ApiService().addStudent(model);
-                      print(updated);
+                      //print(updated);
                       _showSuccessDialogue(context);
                       _idController.text = updated.id.toString();
                     },
@@ -398,29 +400,6 @@ class _StudentRegisterState extends State<StudentRegister> {
       btnCancelText: 'Stay',
       btnCancelColor: Colors.lightGreen,
     ).show();
-  }
-
-  _showErrorDialogue(BuildContext context) {
-    AwesomeDialog(
-            context: context,
-            dialogType: DialogType.error,
-            animType: AnimType.topSlide,
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 2,
-            ),
-            width: 500,
-            dismissOnTouchOutside: false,
-            showCloseIcon: true,
-            desc: '\nStudent Registeration is failed\n',
-            descTextStyle: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-            btnOkIcon: Icons.cancel,
-            btnOkColor: Colors.red,
-            btnOkOnPress: () {})
-        .show();
   }
 
   void _resetToDefault() {

@@ -102,11 +102,10 @@ class MyApp extends StatelessWidget {
           //JaeTop(),
           body: TabBarView(
             children: [
-              //StudentRegister(),
+              StudentRegister(),
               //StudentDetails(model: StudentModel()),
-              StudentList(),
-              Text('1'),
               Text('2'),
+              StudentList(),
             ],
           ),
         ),

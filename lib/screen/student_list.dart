@@ -481,7 +481,7 @@ class _StudentListState extends State<StudentList> {
           .value = start;
     }
 
-    excel.save(fileName: 'Jin.xls');
+    excel.save(fileName: 'Student_List.xlsx');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Excel file downloaded successfully.'),
