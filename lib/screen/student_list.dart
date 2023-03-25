@@ -548,6 +548,7 @@ class _StudentListState extends State<StudentList> {
       compress: true,
     );
 
+/*
     pdf.addPage(
       pw.Page(
         pageTheme: pw.PageTheme(pageFormat: PdfPageFormat.a4.landscape),
@@ -636,10 +637,91 @@ class _StudentListState extends State<StudentList> {
         },
       ),
     );
+*/
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageTheme: pw.PageTheme(pageFormat: PdfPageFormat.a4.landscape),
+        build: (context) => [
+          pw.SizedBox(
+            width: double.infinity,
+            child: pw.Center(
+              child: pw.Text(
+                'Student List',
+                style: pw.TextStyle(font: ttf, fontSize: 25),
+              ),
+            ),
+          ),
+          pw.SizedBox(height: 20),
+          pw.Container(
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(
+                width: 5,
+                color: PdfColors.cyan,
+              ),
+            ),
+            padding: const pw.EdgeInsets.all(
+              10,
+            ),
+            child: pw.Table.fromTextArray(
+              context: context,
+              columnWidths: {
+                0: const pw.FractionColumnWidth(0.05),
+                1: const pw.FractionColumnWidth(0.1),
+                2: const pw.FractionColumnWidth(0.1),
+                3: const pw.FractionColumnWidth(0.05),
+                4: const pw.FractionColumnWidth(0.1),
+                5: const pw.FractionColumnWidth(0.1),
+                6: const pw.FractionColumnWidth(0.1),
+                7: const pw.FractionColumnWidth(0.1),
+                8: const pw.FractionColumnWidth(0.1),
+                9: const pw.FractionColumnWidth(0.1),
+                10: const pw.FractionColumnWidth(0.1),
+                11: const pw.FractionColumnWidth(0.1)
+              },
+              cellStyle: pw.TextStyle(fontSize: 8, font: ttf),
+              headerStyle: pw.TextStyle(
+                  fontSize: 9, font: ttf, fontWeight: pw.FontWeight.bold),
+              headerDecoration: const pw.BoxDecoration(
+                color: PdfColors.grey300,
+              ),
+              headers: [
+                'Id',
+                'First Name',
+                'Last Name',
+                'G',
+                'State',
+                'Branch',
+                'Enrolment',
+                'Contact 1',
+                'Contact 2',
+                'Email',
+                'Address',
+                'Start Date'
+              ],
+              data: [
+                for (int i = 0; i < students.length; i++)
+                  [
+                    students[i]['id'],
+                    students[i]['firstName'],
+                    students[i]['lastName'],
+                    students[i]['grade'],
+                    students[i]['state'],
+                    students[i]['branch'],
+                    students[i]['enrolmentDate'],
+                    students[i]['contactNo1'],
+                    students[i]['contactNo2'],
+                    students[i]['email'],
+                    students[i]['address'],
+                    students[i]['registerDate']
+                  ]
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
 
     return pdf.save();
-    // PdfPreview(
-    //   build: (format) => pdf.save(),
-    // );
   }
 }
