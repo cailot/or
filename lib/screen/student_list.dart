@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:excel/excel.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:orca/model/student_model.dart';
 import 'package:orca/screen/student_details.dart';
 import 'package:orca/util/jae_utils.dart';
@@ -15,6 +19,10 @@ import 'package:orca/widget/jae_dropdown.dart';
 import 'package:orca/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
 class StudentList extends StatefulWidget {
   const StudentList({super.key});
 
@@ -25,6 +33,7 @@ class StudentList extends StatefulWidget {
 class _StudentListState extends State<StudentList> {
   static const String ALL = 'All';
   late List<dynamic> students = [];
+
   late ListConditionModel model;
 
   List<String> states = [];
@@ -98,6 +107,7 @@ class _StudentListState extends State<StudentList> {
 
   @override
   Widget build(BuildContext context) {
+    _searchStudentList(context);
     return SingleChildScrollView(
       child: Container(
         // color: Colors.amber.shade300,
@@ -221,7 +231,9 @@ class _StudentListState extends State<StudentList> {
                   ),
                   JaeButton(
                     label: 'Print',
-                    tapped: () {},
+                    tapped: () {
+                      _printPdf();
+                    },
                   ),
                   SizedBox(
                     // width: 10,
@@ -233,31 +245,7 @@ class _StudentListState extends State<StudentList> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 5,
-                  color: Colors.cyan.shade500,
-                ),
-              ),
-              padding: const EdgeInsets.all(
-                10,
-              ),
-              child: students.isEmpty
-                  ? const Center(
-                      //child: CircularProgressIndicator(),
-                      child: Text('\nPlease Search Student List\n'),
-                    )
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: _dataColumnList(),
-                        rows: _dataRowList(),
-                        sortColumnIndex: _sortColumnIndex,
-                        sortAscending: _sortAscending,
-                      ),
-                    ),
-            ),
+            _studentList()
           ],
         ),
       ),
@@ -372,13 +360,6 @@ class _StudentListState extends State<StudentList> {
   }
 
   Future<void> _searchStudentList(BuildContext context) async {
-    print(model);
-    // ApiService().getStudents(model).then((value) {
-    //   setState(() {
-    //     students = value;
-    //   });
-    // });
-
     List sts = await ApiService().getStudents(model);
     setState(() {
       students = sts;
@@ -447,7 +428,7 @@ class _StudentListState extends State<StudentList> {
       var con2 = std['contactNo2'];
       var email = std['email'];
       var address = std['address'];
-      var start = std['startDate'];
+      var start = std['registerDate'];
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: (i + 1)))
           .value = id;
@@ -486,7 +467,7 @@ class _StudentListState extends State<StudentList> {
           .value = start;
     }
 
-    excel.save(fileName: 'Jin.xlsx');
+    excel.save(fileName: 'Jin.xls');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Excel file downloaded successfully.'),
@@ -515,5 +496,150 @@ class _StudentListState extends State<StudentList> {
       btnOkText: 'Ok',
       btnOkColor: const Color(0xfff5b642),
     ).show();
+  }
+
+  Container _studentList() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 5,
+          color: Colors.cyan.shade500,
+        ),
+      ),
+      padding: const EdgeInsets.all(
+        10,
+      ),
+      child: students.isEmpty
+          ? const Center(
+              //child: CircularProgressIndicator(),
+              child: Text(
+                '\nPlease Search Student List\n',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            )
+          : SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: _dataColumnList(),
+                rows: _dataRowList(),
+                sortColumnIndex: _sortColumnIndex,
+                sortAscending: _sortAscending,
+              ),
+            ),
+    );
+  }
+
+  Future<void> _printPdf() async {
+    final pdf = await _generatePdf();
+    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf);
+  }
+
+  Future<Uint8List> _generatePdf() async {
+    //Future<void> _generatePdf() async {
+    final font = await rootBundle.load("fonts/Roboto-Regular.ttf");
+    final ttf = pw.Font.ttf(font);
+
+    final pdf = pw.Document(
+      version: PdfVersion.pdf_1_5,
+      compress: true,
+    );
+
+    pdf.addPage(
+      pw.Page(
+        pageTheme: pw.PageTheme(pageFormat: PdfPageFormat.a4.landscape),
+        build: (context) {
+          return pw.Column(
+            children: [
+              pw.SizedBox(
+                width: double.infinity,
+                child: pw.Center(
+                  child: pw.Text(
+                    'Student List',
+                    style: pw.TextStyle(font: ttf, fontSize: 25),
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Flexible(
+                child: pw.Container(
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(
+                      width: 5,
+                      color: PdfColors.cyan,
+                    ),
+                  ),
+                  padding: const pw.EdgeInsets.all(
+                    10,
+                  ),
+                  child: pw.Table.fromTextArray(
+                    context: context,
+                    columnWidths: {
+                      0: const pw.FractionColumnWidth(0.05),
+                      1: const pw.FractionColumnWidth(0.1),
+                      2: const pw.FractionColumnWidth(0.1),
+                      3: const pw.FractionColumnWidth(0.05),
+                      4: const pw.FractionColumnWidth(0.1),
+                      5: const pw.FractionColumnWidth(0.1),
+                      6: const pw.FractionColumnWidth(0.1),
+                      7: const pw.FractionColumnWidth(0.1),
+                      8: const pw.FractionColumnWidth(0.1),
+                      9: const pw.FractionColumnWidth(0.1),
+                      10: const pw.FractionColumnWidth(0.1),
+                      11: const pw.FractionColumnWidth(0.1)
+                    },
+                    cellStyle: pw.TextStyle(fontSize: 8, font: ttf),
+                    headerStyle: pw.TextStyle(
+                        fontSize: 9, font: ttf, fontWeight: pw.FontWeight.bold),
+                    headerDecoration: const pw.BoxDecoration(
+                      color: PdfColors.grey300,
+                    ),
+                    headers: [
+                      'Id',
+                      'First Name',
+                      'Last Name',
+                      'G',
+                      'State',
+                      'Branch',
+                      'Enrolment',
+                      'Contact 1',
+                      'Contact 2',
+                      'Email',
+                      'Address',
+                      'Start Date'
+                    ],
+                    data: [
+                      for (int i = 0; i < students.length; i++)
+                        [
+                          students[i]['id'],
+                          students[i]['firstName'],
+                          students[i]['lastName'],
+                          students[i]['grade'],
+                          students[i]['state'],
+                          students[i]['branch'],
+                          students[i]['enrolmentDate'],
+                          students[i]['contactNo1'],
+                          students[i]['contactNo2'],
+                          students[i]['email'],
+                          students[i]['address'],
+                          students[i]['registerDate']
+                        ]
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    return pdf.save();
+    // PdfPreview(
+    //   build: (format) => pdf.save(),
+    // );
   }
 }
