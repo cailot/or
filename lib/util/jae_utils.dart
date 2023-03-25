@@ -29,7 +29,30 @@ enum JaeState {
   ACT
 }
 
-enum JaeBranch { Braybrook, Kew, Doncaster, Box_Hill }
+enum JaeBranch {
+  Braybrook,
+  Balwyn,
+  Bayswater,
+  Box_Hill,
+  Caroline_Springs,
+  Chadstone,
+  Craigieburn,
+  Cranbourne,
+  Epping,
+  Glen_Waverley,
+  Mitcham,
+  Narre_Warren,
+  Ormond,
+  Point_Cook,
+  Preston,
+  Springvale,
+  St_Albans,
+  Werribee,
+  Mernda,
+  Melton,
+  Glenroy,
+  Packenham
+}
 
 enum JaeActive { Current, Stopped }
 

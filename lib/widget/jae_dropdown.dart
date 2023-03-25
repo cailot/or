@@ -33,25 +33,30 @@ class JaeDropdownList extends StatelessWidget {
                 horizontal: 15,
               ),
             ),
-            child: DropdownButtonHideUnderline(
-              child: Expanded(
-                child: DropdownButton(
-                  value: value,
-                  isExpanded: true,
-                  onChanged: changed,
-                  items: menus.map((String item) {
-                    return DropdownMenuItem(
-                      value: item,
-                      child: Text(
-                        item,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
-                  }).toList(),
-                  //itemHeight: 50,
+            child: Flex(
+              direction: Axis.horizontal,
+              children: [
+                Flexible(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      value: value,
+                      isExpanded: true,
+                      onChanged: changed,
+                      items: menus.map((String item) {
+                        return DropdownMenuItem(
+                          value: item,
+                          child: Text(
+                            item,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
+                      //itemHeight: 50,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

@@ -1,23 +1,15 @@
-import 'dart:ui';
+// ignore_for_file: constant_identifier_names
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:excel/excel.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:orca/model/student_model.dart';
-import 'package:orca/screen/student_details.dart';
 import 'package:orca/util/jae_utils.dart';
 import 'package:orca/widget/jae_button.dart';
-import 'package:orca/widget/jae_datepicker.dart';
-import 'package:orca/widget/jae_fixed_textfield.dart';
-import 'package:orca/widget/jae_textarea.dart';
 import 'package:orca/model/list_condition_model.dart';
 import 'package:orca/widget/jae_dropdown.dart';
 
 import 'package:orca/service/api_service.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -52,6 +44,7 @@ class _StudentListState extends State<StudentList> {
   bool _sortAscending = true;
 
   // Function to handle sorting
+  // ignore: use_function_type_syntax_for_parameters
   void _sort<T>(Comparable<T> getField(Map<String, dynamic> d), int columnIndex,
       bool ascending) {
     setState(() {
@@ -107,7 +100,6 @@ class _StudentListState extends State<StudentList> {
 
   @override
   Widget build(BuildContext context) {
-    _searchStudentList(context);
     return SingleChildScrollView(
       child: Container(
         // color: Colors.amber.shade300,
@@ -342,12 +334,10 @@ class _StudentListState extends State<StudentList> {
                 Text(item['email']),
               ),
               DataCell(
-                Flexible(
-                  child: Text(
-                    item['address'],
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                  ),
+                Text(
+                  item['address'],
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                 ),
               ),
               DataCell(
@@ -359,12 +349,36 @@ class _StudentListState extends State<StudentList> {
         .toList();
   }
 
+  _showIdWarningDialogue(BuildContext context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.warning,
+      animType: AnimType.topSlide,
+      borderSide: const BorderSide(
+        color: Colors.yellow,
+        width: 2,
+      ),
+      width: 500,
+      dismissOnTouchOutside: false,
+      showCloseIcon: true,
+      desc: '\nNo data found in the system\n',
+      descTextStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+      ),
+      btnOkOnPress: () {},
+      btnOkText: 'Ok',
+      btnOkColor: const Color(0xfff5b642),
+    ).show();
+  }
+
   Future<void> _searchStudentList(BuildContext context) async {
     List sts = await ApiService().getStudents(model);
     setState(() {
       students = sts;
     });
     if (sts.isEmpty) {
+      // ignore: use_build_context_synchronously
       _showIdWarningDialogue(context);
     }
   }
@@ -475,29 +489,6 @@ class _StudentListState extends State<StudentList> {
     );
   }
 
-  _showIdWarningDialogue(BuildContext context) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.warning,
-      animType: AnimType.topSlide,
-      borderSide: const BorderSide(
-        color: Colors.yellow,
-        width: 2,
-      ),
-      width: 500,
-      dismissOnTouchOutside: false,
-      showCloseIcon: true,
-      desc: '\nNo data found in the system\n',
-      descTextStyle: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-      ),
-      btnOkOnPress: () {},
-      btnOkText: 'Ok',
-      btnOkColor: const Color(0xfff5b642),
-    ).show();
-  }
-
   Container _studentList() {
     return Container(
       decoration: BoxDecoration(
@@ -547,97 +538,6 @@ class _StudentListState extends State<StudentList> {
       version: PdfVersion.pdf_1_5,
       compress: true,
     );
-
-/*
-    pdf.addPage(
-      pw.Page(
-        pageTheme: pw.PageTheme(pageFormat: PdfPageFormat.a4.landscape),
-        build: (context) {
-          return pw.Column(
-            children: [
-              pw.SizedBox(
-                width: double.infinity,
-                child: pw.Center(
-                  child: pw.Text(
-                    'Student List',
-                    style: pw.TextStyle(font: ttf, fontSize: 25),
-                  ),
-                ),
-              ),
-              pw.SizedBox(height: 20),
-              pw.Flexible(
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(
-                      width: 5,
-                      color: PdfColors.cyan,
-                    ),
-                  ),
-                  padding: const pw.EdgeInsets.all(
-                    10,
-                  ),
-                  child: pw.Table.fromTextArray(
-                    context: context,
-                    columnWidths: {
-                      0: const pw.FractionColumnWidth(0.05),
-                      1: const pw.FractionColumnWidth(0.1),
-                      2: const pw.FractionColumnWidth(0.1),
-                      3: const pw.FractionColumnWidth(0.05),
-                      4: const pw.FractionColumnWidth(0.1),
-                      5: const pw.FractionColumnWidth(0.1),
-                      6: const pw.FractionColumnWidth(0.1),
-                      7: const pw.FractionColumnWidth(0.1),
-                      8: const pw.FractionColumnWidth(0.1),
-                      9: const pw.FractionColumnWidth(0.1),
-                      10: const pw.FractionColumnWidth(0.1),
-                      11: const pw.FractionColumnWidth(0.1)
-                    },
-                    cellStyle: pw.TextStyle(fontSize: 8, font: ttf),
-                    headerStyle: pw.TextStyle(
-                        fontSize: 9, font: ttf, fontWeight: pw.FontWeight.bold),
-                    headerDecoration: const pw.BoxDecoration(
-                      color: PdfColors.grey300,
-                    ),
-                    headers: [
-                      'Id',
-                      'First Name',
-                      'Last Name',
-                      'G',
-                      'State',
-                      'Branch',
-                      'Enrolment',
-                      'Contact 1',
-                      'Contact 2',
-                      'Email',
-                      'Address',
-                      'Start Date'
-                    ],
-                    data: [
-                      for (int i = 0; i < students.length; i++)
-                        [
-                          students[i]['id'],
-                          students[i]['firstName'],
-                          students[i]['lastName'],
-                          students[i]['grade'],
-                          students[i]['state'],
-                          students[i]['branch'],
-                          students[i]['enrolmentDate'],
-                          students[i]['contactNo1'],
-                          students[i]['contactNo2'],
-                          students[i]['email'],
-                          students[i]['address'],
-                          students[i]['registerDate']
-                        ]
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-*/
 
     pdf.addPage(
       pw.MultiPage(

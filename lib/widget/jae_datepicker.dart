@@ -65,7 +65,7 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
                   config: CalendarDatePicker2WithActionButtonsConfig(),
                   dialogSize: const Size(325, 400),
                   borderRadius: BorderRadius.circular(5),
-                  initialValue: [widget.selected ?? DateTime.now()],
+                  //initialValue: [widget.selected ?? DateTime.now()],
                 );
                 if (results != null) {
                   //setState(() {
