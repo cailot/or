@@ -59,6 +59,16 @@ class ApiService {
     }
   }
 
+  void dischargeStudent(int id) async {
+    final url = Uri.parse('$baseUrl/student/discharge/$id');
+    final response = await http.put(url);
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw Error();
+    }
+  }
+
   Future<StudentModel?> getStudent(int id) async {
     final url = Uri.parse('$baseUrl/student/$id');
     final response = await http.get(url);

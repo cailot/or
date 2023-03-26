@@ -3,7 +3,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:orca/model/student_model.dart';
-import 'package:orca/screen/student_details.dart';
+import 'package:orca/provider/student_provider.dart';
 import 'package:orca/util/jae_utils.dart';
 import 'package:orca/widget/jae_button.dart';
 import 'package:orca/widget/jae_datepicker.dart';
@@ -13,9 +13,11 @@ import 'package:orca/widget/jae_textfield.dart';
 import 'package:orca/widget/jae_dropdown.dart';
 
 import 'package:orca/service/api_service.dart';
+import 'package:provider/provider.dart';
 
 class StudentRegister extends StatefulWidget {
-  const StudentRegister({super.key});
+  TabController tabController;
+  StudentRegister({required this.tabController});
 
   @override
   State<StudentRegister> createState() => _StudentRegisterState();
@@ -23,6 +25,7 @@ class StudentRegister extends StatefulWidget {
 
 class _StudentRegisterState extends State<StudentRegister> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   StudentModel model = StudentModel();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -34,24 +37,23 @@ class _StudentRegisterState extends State<StudentRegister> {
   final TextEditingController _memoController = TextEditingController();
   final DateTime _today = DateTime.now();
 
-  @override
-  void initState() {
-    super.initState();
-    //_formKey = GlobalKey<FormState>();
-    //model = StudentModel();
-    // _idController = TextEditingController();
-    // _firstNameController = TextEditingController();
-    // _lastNameController = TextEditingController();
-    // _contact1Controller = TextEditingController();
-    // _contact2Controller = TextEditingController();
-    // _emailController = TextEditingController();
-    // _addressController = TextEditingController();
-    // _memoController = TextEditingController();
-    // _today = DateTime.now();
-  }
+  var states = JaeState.values
+      .map((e) => e.name.toString().replaceAll('_', ' '))
+      .toList();
+  String stateDropdownValue = JaeState.values[0].name.toString(); //'Victoria';
+
+  var branches = JaeBranch.values
+      .map((e) => e.name.toString().replaceAll('_', ' '))
+      .toList();
+  String branchDropdownValue =
+      JaeBranch.values[0].name.toString(); //'Braybrook';
+
+  var grades = JaeGrade.values.map((e) => e.name).toList();
+  String gradeDropdownValue = JaeGrade.values[0].name.toString(); //'P2';
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<StudentProvider>(context);
     return SingleChildScrollView(
       child: Container(
         // color: Colors.amber.shade300,
@@ -66,7 +68,6 @@ class _StudentRegisterState extends State<StudentRegister> {
               margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // state
                   JaeDropdownList(
@@ -109,7 +110,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                       }
                       var updated = await ApiService().addStudent(model);
                       //print(updated);
-                      _showSuccessDialogue(context);
+                      _showSuccessDialogue(provider);
                       _idController.text = updated.id.toString();
                     },
                   ),
@@ -348,23 +349,9 @@ class _StudentRegisterState extends State<StudentRegister> {
     );
   }
 
-  var states = JaeState.values
-      .map((e) => e.name.toString().replaceAll('_', ' '))
-      .toList();
-  String stateDropdownValue = JaeState.values[0].name.toString(); //'Victoria';
-
-  var branches = JaeBranch.values
-      .map((e) => e.name.toString().replaceAll('_', ' '))
-      .toList();
-  String branchDropdownValue =
-      JaeBranch.values[0].name.toString(); //'Braybrook';
-
-  var grades = JaeGrade.values.map((e) => e.name).toList();
-  String gradeDropdownValue = JaeGrade.values[0].name.toString(); //'P2';
-
-  _showSuccessDialogue(BuildContext context) {
+  _showSuccessDialogue(StudentProvider provider) {
     AwesomeDialog(
-      context: context,
+      context: _formKey.currentContext!,
       dialogType: DialogType.success,
       animType: AnimType.topSlide,
       borderSide: const BorderSide(
@@ -381,16 +368,8 @@ class _StudentRegisterState extends State<StudentRegister> {
         fontWeight: FontWeight.w500,
       ),
       btnOkOnPress: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) {
-              model.id = int.parse(_idController.text);
-              return StudentDetails(
-                model: model,
-              );
-            },
-          ),
-        );
+        provider.studentId = int.parse(_idController.text);
+        widget.tabController.animateTo(1);
       },
       btnCancelOnPress: () {},
       btnOkText: 'Go',
