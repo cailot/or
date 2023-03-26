@@ -12,9 +12,8 @@ import 'package:orca/widget/jae_dropdown.dart';
 import 'package:orca/service/api_service.dart';
 
 class StudentDetails extends StatefulWidget {
-  late final StudentModel model;
+  StudentModel model;
 
-  // ignore: use_key_in_widget_constructors
   StudentDetails({required this.model});
 
   @override
@@ -22,7 +21,7 @@ class StudentDetails extends StatefulWidget {
 }
 
 class _StudentDetailsState extends State<StudentDetails> {
-  var _formKey;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -35,7 +34,6 @@ class _StudentDetailsState extends State<StudentDetails> {
   @override
   void initState() {
     super.initState();
-    _formKey = GlobalKey<FormState>();
     //print(widget.model);
     _idController.text =
         (widget.model.id == null) ? '' : widget.model.id.toString();
@@ -478,12 +476,14 @@ class _StudentDetailsState extends State<StudentDetails> {
 
     //print('$selectedDate - ${widget.model.enrolmentDate}');
 
-    widget.model.enrolmentDate = student.enrolmentDate;
-    setState(() {
-      widget.model.state = student.state;
-      widget.model.branch = student.branch;
-      widget.model.grade = student.grade;
-    });
+    widget.model = student;
+    setState(() {});
+    // widget.model.enrolmentDate = student.enrolmentDate;
+    // setState(() {
+    //   widget.model.state = student.state;
+    //   widget.model.branch = student.branch;
+    //   widget.model.grade = student.grade;
+    // });
   }
 
   void _rebuildBranchInfo(String? val) {

@@ -388,9 +388,6 @@ class _StudentRegisterState extends State<StudentRegister> {
               return StudentDetails(
                 model: model,
               );
-              // return StudentDetails(
-              //   model: StudentModel(),
-              // );
             },
           ),
         );

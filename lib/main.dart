@@ -5,7 +5,6 @@ import 'package:orca/model/student_model.dart';
 import 'package:orca/screen/student_details.dart';
 import 'package:orca/screen/student_list.dart';
 import 'package:orca/screen/student_register.dart';
-//import 'package:orca/service/api_service.dart';
 
 void main() {
   //ApiService().getStudentCount();
@@ -75,7 +74,7 @@ class MyApp extends StatelessWidget {
               IconButton(
                 icon: Image.asset('images/logo.png'),
                 onPressed: () {
-                  print('Top icon');
+                  //print('Top icon');
                 },
               ),
             ]),
@@ -102,10 +101,32 @@ class MyApp extends StatelessWidget {
           //JaeTop(),
           body: TabBarView(
             children: [
-              StudentRegister(),
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return MaterialPageRoute(
+                    builder: (context) => StudentRegister(),
+                  );
+                },
+              ),
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return MaterialPageRoute(
+                    builder: (context) => StudentDetails(
+                      model: StudentModel(),
+                    ),
+                  );
+                },
+              ),
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return MaterialPageRoute(
+                    builder: (context) => StudentList(),
+                  );
+                },
+              ),
               //StudentDetails(model: StudentModel()),
-              Text('2'),
-              StudentList(),
+              //StudentDummy(),
+              //StudentList(),
             ],
           ),
         ),

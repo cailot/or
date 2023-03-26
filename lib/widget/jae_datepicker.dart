@@ -68,11 +68,9 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
                   //initialValue: [widget.selected ?? DateTime.now()],
                 );
                 if (results != null) {
-                  //setState(() {
                   widget.selected = results.first;
                   controller.text =
                       '${widget.selected?.day}/${widget.selected?.month}/${widget.selected?.year}';
-                  //});
                 }
               },
             ),

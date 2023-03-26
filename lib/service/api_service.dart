@@ -63,7 +63,7 @@ class ApiService {
     final url = Uri.parse('$baseUrl/student/$id');
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      if ((response.body == null) || (response.body.isEmpty)) {
+      if (response.body.isEmpty) {
         return null;
       }
       final responseData = jsonDecode(response.body);
@@ -82,7 +82,7 @@ class ApiService {
         '$baseUrl/students?state=${model.state}&branch=${model.branch}&grade=${model.grade}&year=${model.year}&active=${model.activeStudent}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      if ((response.body == null) || (response.body.isEmpty)) {
+      if (response.body.isEmpty) {
         return [];
       }
       List<dynamic> data = json.decode(response.body);
