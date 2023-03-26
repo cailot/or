@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:orca/provider/student_provider.dart';
-import 'package:orca/screen/student_details.dart';
+import 'package:orca/screen/student_admin.dart';
 import 'package:orca/screen/student_list.dart';
 import 'package:orca/screen/student_register.dart';
 import 'package:provider/provider.dart';
@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 StudentRegister(
                   tabController: tabController,
                 ),
-                StudentDetails(),
+                StudentAdmin(),
                 StudentList(),
               ],
             ),

@@ -51,7 +51,6 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
             //scrollDirection: Axis.horizontal,
             child: TextFormField(
               controller: controller,
-              //initialValue: today,
               decoration: const InputDecoration(
                 hintText: 'Select Date',
                 border: OutlineInputBorder(),
@@ -68,6 +67,7 @@ class _JaeDatepickerState extends State<JaeDatepicker> {
                   //initialValue: [widget.selected ?? DateTime.now()],
                 );
                 if (results != null) {
+                  await Future.delayed(Duration.zero);
                   widget.selected = results.first;
                   controller.text =
                       '${widget.selected?.day}/${widget.selected?.month}/${widget.selected?.year}';

@@ -14,12 +14,12 @@ import 'package:orca/service/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
-class StudentDetails extends StatefulWidget {
+class StudentAdmin extends StatefulWidget {
   @override
-  State<StudentDetails> createState() => _StudentDetailsState();
+  State<StudentAdmin> createState() => _StudentAdminState();
 }
 
-class _StudentDetailsState extends State<StudentDetails> {
+class _StudentAdminState extends State<StudentAdmin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -288,7 +288,7 @@ class _StudentDetailsState extends State<StudentDetails> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Student Information',
+                  'Student Administration',
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
               ],
@@ -458,7 +458,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                   await _searchStudentInfo(
                                       int.parse(_idController.text));
                                 },
-                                child: Text(
+                                child: const Text(
                                   'Search',
                                 ),
                               ),
