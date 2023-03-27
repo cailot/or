@@ -123,10 +123,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             body: TabBarView(
               controller: tabController,
               children: [
+                StudentAdmin(),
                 StudentRegister(
                   tabController: tabController,
                 ),
-                StudentAdmin(),
                 StudentList(),
               ],
             ),

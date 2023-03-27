@@ -1,18 +1,25 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:orca/model/student_model.dart';
 import 'package:orca/provider/student_provider.dart';
 import 'package:orca/util/jae_utils.dart';
 import 'package:orca/widget/jae_button.dart';
 import 'package:orca/widget/jae_datepicker.dart';
+import 'package:orca/widget/jae_datepicker_small.dart';
+import 'package:orca/widget/jae_dropdown_small.dart';
 import 'package:orca/widget/jae_textarea.dart';
+import 'package:orca/widget/jae_textarea_small.dart';
 import 'package:orca/widget/jae_textfield.dart';
 import 'package:orca/widget/jae_dropdown.dart';
 
 import 'package:orca/service/api_service.dart';
+import 'package:orca/widget/jae_textfield_small.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
+
+import '../widget/jae_small_button.dart';
 
 class StudentAdmin extends StatefulWidget {
   @override
@@ -58,7 +65,7 @@ class _StudentAdminState extends State<StudentAdmin> {
       // print('@Detail - Id : $id , StudentModel - $model');
     }
     return (id == 0)
-        ? detailBody()
+        ? layoutManager()
         : FutureBuilder<void>(
             future: _passedStudentInfo(id),
             builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -66,7 +73,8 @@ class _StudentAdminState extends State<StudentAdmin> {
                 if (snapshot.hasError) {
                   return Text('Error occured : ${snapshot.error}');
                 } else {
-                  return detailBody();
+                  return layoutManager();
+                  //return studentDetail();
                 }
               } else {
                 // still fetching Student data...
@@ -76,6 +84,41 @@ class _StudentAdminState extends State<StudentAdmin> {
               }
             },
           );
+  }
+
+  Widget layoutManager() {
+    return StaggeredGrid.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      children: [
+        StaggeredGridTile.count(
+          crossAxisCellCount: 2,
+          mainAxisCellCount: 2,
+          child: studentDetail(),
+        ),
+        StaggeredGridTile.count(
+          crossAxisCellCount: 1,
+          mainAxisCellCount: 2,
+          child: Container(color: Colors.red),
+        ),
+        StaggeredGridTile.count(
+          crossAxisCellCount: 2,
+          mainAxisCellCount: 3,
+          child: Container(color: Colors.green),
+        ),
+        StaggeredGridTile.count(
+          crossAxisCellCount: 1,
+          mainAxisCellCount: 5,
+          child: Container(color: Colors.yellow),
+        ),
+        StaggeredGridTile.count(
+          crossAxisCellCount: 2,
+          mainAxisCellCount: 2,
+          child: Container(color: Colors.blue),
+        ),
+      ],
+    );
   }
 
   void _rebuildGradeInfo(String? val) {
@@ -382,7 +425,7 @@ class _StudentAdminState extends State<StudentAdmin> {
       ),
       btnOkOnPress: () {},
       btnOkText: 'Ok',
-      btnOkColor: Color(0xfff5b642),
+      btnOkColor: const Color(0xfff5b642),
     ).show();
   }
 
@@ -508,30 +551,33 @@ class _StudentAdminState extends State<StudentAdmin> {
     setState(() {});
   }
 
-  Widget detailBody() {
+  Widget studentDetail() {
     return SingleChildScrollView(
       child: Container(
         // color: Colors.amber.shade300,
-        margin: const EdgeInsets.all(50),
+        margin: const EdgeInsets.all(5),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Text(
-                  'Student Administration',
-                  style: Theme.of(context).textTheme.labelMedium,
+                  'Student Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
             SizedBox(
               //height: 30,
-              height: MediaQuery.of(context).size.height * 0.03,
+              height: MediaQuery.of(context).size.height * 0.01,
             ),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  width: 5,
+                  width: 3,
                   color: Colors.cyan.shade500,
                 ),
               ),
@@ -544,32 +590,190 @@ class _StudentAdminState extends State<StudentAdmin> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 15,
-                        top: 15,
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
                       ),
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // First Row
                         children: [
-                          JaeTextField(
-                            controller: _idController,
-                            label: 'ID',
-                            onSaved: (val) {
-                              model.id = val;
-                            },
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Enter ID';
+                          Expanded(
+                            child: SizedBox(
+                              height: 30,
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  filled: true,
+                                  fillColor: Color(0xffFCF3CF),
+                                  //hintText: 'Your Keyword',
+                                ),
+                                controller: _searchController,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            // width: 10,
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Search Button
+                          JaeSmallButton(
+                            label: 'Search',
+                            tapped: () async {
+                              // 1. check whether ID is filled or not
+                              if (_searchController.text == '') {
+                                _showIdWarningDialogue();
+                                return;
                               }
-                              return null;
+                              // 2. search Students
+                              await _searchStudent(_searchController.text);
                             },
                           ),
                           SizedBox(
-                            //width: 50,
-                            width: MediaQuery.of(context).size.width * 0.03,
+                            // width: 10,
+                            width: MediaQuery.of(context).size.width * 0.01,
                           ),
-                          JaeTextField(
+                          // Update Button
+                          JaeSmallButton(
+                            label: 'Update',
+                            tapped: () async {
+                              // 1. check whether ID is filled or not
+                              if (_idController.text == '') return;
+                              // 2. create new model based on the current value on the widgets
+                              _updateStudent();
+                              // show confirmation dialog
+                              _showUpdateConfirmationDialogue();
+                            },
+                          ),
+                          // clear button
+                          SizedBox(
+                            // width: 10,
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Delete Button
+                          JaeSmallButton(
+                            label: 'Delete',
+                            tapped: () async {
+                              if (_idController.text == '') {
+                                _showIdWarningDialogue();
+                                return;
+                              }
+                              _showDischargeDialogue(
+                                  int.parse(_idController.text));
+                            },
+                          ),
+                          SizedBox(
+                            // width: 10,
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Clear Button
+                          JaeSmallButton(
+                            label: 'Clear',
+                            tapped: () {
+                              _formKey.currentState?.reset();
+                              model.enrolmentDate = null;
+
+                              _clearAllForm();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
+                      ),
+                      child: Row(
+                        // Second Row
+                        children: [
+                          // State
+                          JaeSmallDropdownList(
+                            label: 'State',
+                            value: (model.state == null)
+                                ? JaeState.values[0].name
+                                : model.state.toString(),
+                            menus: states,
+                            changed: (String? val) {
+                              _rebuildStateInfo(val);
+                            },
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Branch
+                          JaeSmallDropdownList(
+                            label: 'Branch',
+                            value: (model.branch == null)
+                                ? JaeBranch.values[0].name
+                                : model.branch.toString(),
+                            menus: branches,
+                            changed: (String? val) {
+                              _rebuildBranchInfo(val);
+                            },
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
+                      ),
+                      child: Row(
+                        // Third Row
+                        children: [
+                          // ID
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: const [
+                                    Text(
+                                      'ID',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // ignore: sized_box_for_whitespace
+                                SizedBox(
+                                  height: 35,
+                                  child: TextFormField(
+                                    readOnly: true,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    onSaved: (val) {
+                                      model.id = int.parse(val!);
+                                    },
+                                    validator: (val) {
+                                      if (val == null || val.isEmpty) {
+                                        return 'Enter ID';
+                                      }
+                                      return null;
+                                    },
+                                    controller: _idController,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // First Name
+                          JaeSmallTextField(
                             controller: _firstNameController,
                             label: 'First Name',
                             onSaved: (val) {
@@ -583,10 +787,10 @@ class _StudentAdminState extends State<StudentAdmin> {
                             },
                           ),
                           SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
+                            width: MediaQuery.of(context).size.width * 0.01,
                           ),
-                          JaeTextField(
+                          // Last Name
+                          JaeSmallTextField(
                             controller: _lastNameController,
                             label: 'Last Name',
                             onSaved: (val) {
@@ -599,214 +803,21 @@ class _StudentAdminState extends State<StudentAdmin> {
                               return null;
                             },
                           ),
-                          SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: const [
-                                    Text(
-                                      'Search Keyword',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // ignore: sized_box_for_whitespace
-                                TextFormField(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    filled: true,
-                                    fillColor: Colors.amber,
-                                  ),
-                                  controller: _searchController,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.01,
-                                  ),
-                                  JaeButton(
-                                    label: 'Update',
-                                    tapped: () async {
-                                      // 1. check whether ID is filled or not
-                                      if (_idController.text == '') return;
-                                      // 2. create new model based on the current value on the widgets
-                                      _updateStudent();
-                                      // show confirmation dialog
-                                      _showUpdateConfirmationDialogue();
-                                    },
-                                  ),
-                                  // clear button
-                                  SizedBox(
-                                    // width: 10,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.01,
-                                  ),
-                                  JaeButton(
-                                    label: 'Delete',
-                                    tapped: () async {
-                                      if (_idController.text == '') {
-                                        _showIdWarningDialogue();
-                                        return;
-                                      }
-                                      _showDischargeDialogue(
-                                          int.parse(_idController.text));
-                                    },
-                                  ),
-                                  SizedBox(
-                                    // width: 10,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.01,
-                                  ),
-                                  JaeButton(
-                                    label: 'Clear',
-                                    tapped: () {
-                                      _formKey.currentState?.reset();
-                                      model.enrolmentDate = null;
-
-                                      _clearAllForm();
-                                    },
-                                  ),
-                                  SizedBox(
-                                    // width: 10,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.01,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                //height: 10,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.01,
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.all(
-                                    5,
-                                  ),
-                                  elevation: 0.8,
-                                  textStyle: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                  minimumSize: const Size(240, 50),
-                                  maximumSize: const Size(240, 50),
-                                ),
-                                onPressed: () async {
-                                  // 1. check whether ID is filled or not
-                                  if (_searchController.text == '') {
-                                    _showIdWarningDialogue();
-                                    return;
-                                  }
-
-                                  // datepicker update not null
-                                  //model.enrolmentDate = '1900-01-01';
-                                  //_formKey.currentState!.save();
-                                  // 2. call get API
-                                  // await _searchStudentInfo(int.parse(_idController.text));
-                                  await _searchStudent(_searchController.text);
-                                },
-                                child: const Text(
-                                  'Search',
-                                ),
-                              ),
-                            ],
-                          ),
-                          // register button
                         ],
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 15,
-                        top: 15,
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
                       ),
                       child: Row(
+                        // Forth Row
                         children: [
-                          // state
-                          JaeDropdownList(
-                            label: '',
-                            value: (model.state == null)
-                                ? JaeState.values[0].name
-                                : model.state.toString(),
-                            menus: states,
-                            changed: (String? val) {
-                              _rebuildStateInfo(val);
-                            },
-                          ),
-                          SizedBox(
-                            //width: 50,
-                            width: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                          // branch
-                          JaeDropdownList(
-                            label: '',
-                            value: (model.branch == null)
-                                ? JaeBranch.values[0].name
-                                : model.branch.toString(),
-                            menus: branches,
-                            changed: (String? val) {
-                              _rebuildBranchInfo(val);
-                            },
-                          ),
-                          SizedBox(
-                            // width: 50,
-                            width: MediaQuery.of(context).size.width * 0.05,
-                          ),
-
-                          // JaeTextField(
-                          //   controller: _firstNameController,
-                          //   label: 'First Name',
-                          //   onSaved: (val) {
-                          //     model.firstName = val;
-                          //   },
-                          //   validator: (val) {
-                          //     if (val == null || val.isEmpty) {
-                          //       return 'Enter First Name';
-                          //     }
-                          //     return null;
-                          //   },
-                          // ),
-                          // SizedBox(
-                          //   // width: 30,
-                          //   width: MediaQuery.of(context).size.width * 0.03,
-                          // ),
-                          // JaeTextField(
-                          //   controller: _lastNameController,
-                          //   label: 'Last Name',
-                          //   onSaved: (val) {
-                          //     model.lastName = val;
-                          //   },
-                          //   validator: (val) {
-                          //     if (val == null || val.isEmpty) {
-                          //       return 'Enter Last Name';
-                          //     }
-                          //     return null;
-                          //   },
-                          // ),
-                          // SizedBox(
-                          //   // width: 30,
-                          //   width: MediaQuery.of(context).size.width * 0.03,
-                          // ),
-                          JaeDropdownList(
+                          // Grade
+                          JaeSmallDropdownList(
                             label: 'Grade',
                             value: (model.grade == null)
                                 ? JaeGrade.values[0].name
@@ -817,10 +828,10 @@ class _StudentAdminState extends State<StudentAdmin> {
                             },
                           ),
                           SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
+                            width: MediaQuery.of(context).size.width * 0.01,
                           ),
-                          JaeDatepicker(
+                          // Enrolment Date
+                          JaeSmallDatepicker(
                             label: 'Enrolment Date',
                             onSaved: (val) {
                               model.enrolmentDate = JaeUtil.dateFormat(val);
@@ -838,48 +849,16 @@ class _StudentAdminState extends State<StudentAdmin> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 15,
-                        top: 15,
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
                       ),
                       child: Row(
+                        // Forth Row
                         children: [
-                          JaeTextField(
-                            controller: _contact1Controller,
-                            label: 'Contact No 1',
-                            onSaved: (val) {
-                              model.contactNo1 = val;
-                            },
-                            validator: (val) {
-                              // if(val==null || val.isEmpty){
-                              //   return 'Enter First Name';
-                              // }
-                              return null;
-                            },
-                          ),
-                          SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
-                          ),
-                          JaeTextField(
-                            controller: _contact2Controller,
-                            label: 'Contact No 2',
-                            onSaved: (val) {
-                              model.contactNo2 = val;
-                            },
-                            validator: (val) {
-                              // if(val==null || val.isEmpty){
-                              //   return 'Enter First Name';
-                              // }
-                              return null;
-                            },
-                          ),
-                          SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
-                          ),
-                          JaeTextField(
+                          // Email
+                          JaeSmallTextField(
                             controller: _emailController,
                             label: 'Email',
                             onSaved: (val) {
@@ -892,19 +871,11 @@ class _StudentAdminState extends State<StudentAdmin> {
                               return null;
                             },
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 15,
-                        top: 15,
-                      ),
-                      child: Row(
-                        children: [
-                          JaeTextField(
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Address
+                          JaeSmallTextField(
                             controller: _addressController,
                             label: 'Address',
                             onSaved: (val) {
@@ -916,20 +887,60 @@ class _StudentAdminState extends State<StudentAdmin> {
                               // }
                               return null;
                             },
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
+                      ),
+                      child: Row(
+                        // Fifth Row
+                        children: [
+                          // Contact No 1
+                          JaeSmallTextField(
+                            controller: _contact1Controller,
+                            label: 'Contact No 1',
+                            onSaved: (val) {
+                              model.contactNo1 = val;
+                            },
+                            validator: (val) {
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Contact No 2
+                          JaeSmallTextField(
+                            controller: _contact2Controller,
+                            label: 'Contact No 2',
+                            onSaved: (val) {
+                              model.contactNo2 = val;
+                            },
+                            validator: (val) {
+                              return null;
+                            },
                           ),
                         ],
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 15,
-                        top: 15,
+                        left: 2,
+                        right: 2,
+                        bottom: 2,
+                        top: 2,
                       ),
                       child: Row(
+                        // Sixth Row
                         children: [
-                          JaeTextArea(
+                          // Memo
+                          JaeSmallTextArea(
                             controller: _memoController,
                             label: 'Memo',
                             onSaved: (val) {
