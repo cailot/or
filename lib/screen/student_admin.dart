@@ -32,6 +32,8 @@ class _StudentAdminState extends State<StudentAdmin> {
 
   StudentModel model = StudentModel();
 
+  late List<dynamic> students = [];
+
   var states = JaeState.values
       .map((e) => e.name.toString().replaceAll('_', ' '))
       .toList();
@@ -52,12 +54,12 @@ class _StudentAdminState extends State<StudentAdmin> {
       provider.studentId = 0;
     }
     if (kDebugMode) {
-      print('@Detail - Id : $id , StudentModel - $model');
+      // print('@Detail - Id : $id , StudentModel - $model');
     }
     return (id == 0)
         ? detailBody()
         : FutureBuilder<void>(
-            future: passedStudentInfo(id),
+            future: _passedStudentInfo(id),
             builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
@@ -99,29 +101,242 @@ class _StudentAdminState extends State<StudentAdmin> {
     );
   }
 
-  Future<void> _searchStudentInfo(int id) async {
-    var student = await ApiService().getStudent(id);
-
-    if (student == null) {
-      _showSearchFailureDialogue(_idController.text);
-      // reset StudentModel
-      _clearAllForm();
+  Future<void> _searchStudent(String keyword) async {
+    // retrieve the result set from the API call
+    List result = await ApiService().searchStudent(keyword);
+    // show no match dialog and exit
+    if (result.isEmpty) {
+      // ignore: use_build_context_synchronously
+      _showSearchFailureDialogue(keyword);
       return;
     }
+    students = result;
+    // display the result set in a modal dialog
 
-    _idController.text = student!.id.toString();
-    _firstNameController.text = student.firstName.toString();
-    _lastNameController.text = student.lastName.toString();
-    _contact1Controller.text = student.contactNo1.toString();
-    _contact2Controller.text = student.contactNo2.toString();
-    _emailController.text = student.email.toString();
-    _addressController.text = student.address.toString();
-    _memoController.text = student.memo.toString();
-    selectedDate =
-        DateFormat('yyyy-MM-dd').parse(student.enrolmentDate.toString());
+    AwesomeDialog(
+      context: _formKey.currentContext!,
+      dialogType: DialogType.noHeader,
+      animType: AnimType.bottomSlide,
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columns: _dataColumnList(),
+          rows: _dataRowList(),
+        ),
+      ),
+    ).show();
+  }
 
-    model = student;
-    setState(() {});
+  List<DataColumn> _dataColumnList() {
+    return <DataColumn>[
+      const DataColumn(
+        label: Text(
+          'Id',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'First Name',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Last Name',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Grade',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'State',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Branch',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Enrolment Date',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Contact No 1',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Contact No 2',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Email',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Address',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Text(
+          'Start Date',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xff2E86C1),
+          ),
+        ),
+      )
+    ];
+  }
+
+  List<DataRow> _dataRowList() {
+    return students
+        .map(
+          (item) => DataRow(
+            cells: <DataCell>[
+              DataCell(
+                Text(item['id'].toString()),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['firstName']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['lastName']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['grade']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['state']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['branch']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['enrolmentDate']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['contactNo1']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['contactNo2']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['email']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(
+                  item['address'],
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                ),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+              DataCell(
+                Text(item['registerDate']),
+                onTap: () {
+                  _fillSearchedStudent(StudentModel.fromJson(item));
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        )
+        .toList();
   }
 
   void _updateStudent() {
@@ -159,7 +374,7 @@ class _StudentAdminState extends State<StudentAdmin> {
       width: 500,
       dismissOnTouchOutside: false,
       showCloseIcon: true,
-      desc: '\nPlease fill in \'ID\' and search again\n',
+      desc: '\nPlease fill in keyword and search again\n',
       descTextStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w500,
@@ -182,7 +397,7 @@ class _StudentAdminState extends State<StudentAdmin> {
       width: 500,
       dismissOnTouchOutside: false,
       showCloseIcon: true,
-      desc: '\nNo record found with Student ID : $text\n',
+      desc: '\nNo Student record found with \'$text\'\n',
       descTextStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w500,
@@ -262,7 +477,7 @@ class _StudentAdminState extends State<StudentAdmin> {
     });
   }
 
-  passedStudentInfo(int id) async {
+  _passedStudentInfo(int id) async {
     model = (await ApiService().getStudent(id))!;
     _idController.text = model.id.toString();
     _firstNameController.text = model.firstName.toString();
@@ -275,6 +490,21 @@ class _StudentAdminState extends State<StudentAdmin> {
     selectedDate =
         DateFormat('yyyy-MM-dd').parse(model.enrolmentDate.toString());
     //await Future.delayed(Duration(seconds: 12));
+  }
+
+  _fillSearchedStudent(StudentModel row) {
+    model = row;
+    _idController.text = model.id.toString();
+    _firstNameController.text = model.firstName.toString();
+    _lastNameController.text = model.lastName.toString();
+    _contact1Controller.text = model.contactNo1.toString();
+    _contact2Controller.text = model.contactNo2.toString();
+    _emailController.text = model.email.toString();
+    _addressController.text = model.address.toString();
+    _memoController.text = model.memo.toString();
+    selectedDate =
+        DateFormat('yyyy-MM-dd').parse(model.enrolmentDate.toString());
+    setState(() {});
   }
 
   Widget detailBody() {
@@ -321,36 +551,6 @@ class _StudentAdminState extends State<StudentAdmin> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // state
-                          JaeDropdownList(
-                            label: '',
-                            value: (model.state == null)
-                                ? JaeState.values[0].name
-                                : model.state.toString(),
-                            menus: states,
-                            changed: (String? val) {
-                              _rebuildStateInfo(val);
-                            },
-                          ),
-                          SizedBox(
-                            //width: 50,
-                            width: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                          // branch
-                          JaeDropdownList(
-                            label: '',
-                            value: (model.branch == null)
-                                ? JaeBranch.values[0].name
-                                : model.branch.toString(),
-                            menus: branches,
-                            changed: (String? val) {
-                              _rebuildBranchInfo(val);
-                            },
-                          ),
-                          SizedBox(
-                            // width: 50,
-                            width: MediaQuery.of(context).size.width * 0.05,
-                          ),
                           JaeTextField(
                             controller: _idController,
                             label: 'ID',
@@ -365,8 +565,42 @@ class _StudentAdminState extends State<StudentAdmin> {
                             },
                           ),
                           SizedBox(
-                            // width: 50,
-                            width: MediaQuery.of(context).size.width * 0.05,
+                            //width: 50,
+                            width: MediaQuery.of(context).size.width * 0.03,
+                          ),
+                          JaeTextField(
+                            controller: _firstNameController,
+                            label: 'First Name',
+                            onSaved: (val) {
+                              model.firstName = val;
+                            },
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter First Name';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            // width: 30,
+                            width: MediaQuery.of(context).size.width * 0.03,
+                          ),
+                          JaeTextField(
+                            controller: _lastNameController,
+                            label: 'Last Name',
+                            onSaved: (val) {
+                              model.lastName = val;
+                            },
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter Last Name';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            // width: 30,
+                            width: MediaQuery.of(context).size.width * 0.03,
                           ),
                           Column(
                             children: [
@@ -455,8 +689,8 @@ class _StudentAdminState extends State<StudentAdmin> {
                                   //model.enrolmentDate = '1900-01-01';
                                   //_formKey.currentState!.save();
                                   // 2. call get API
-                                  await _searchStudentInfo(
-                                      int.parse(_idController.text));
+                                  // await _searchStudentInfo(int.parse(_idController.text));
+                                  await _searchStudent(_idController.text);
                                 },
                                 child: const Text(
                                   'Search',
@@ -477,40 +711,71 @@ class _StudentAdminState extends State<StudentAdmin> {
                       ),
                       child: Row(
                         children: [
-                          JaeTextField(
-                            controller: _firstNameController,
-                            label: 'First Name',
-                            onSaved: (val) {
-                              model.firstName = val;
-                            },
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Enter First Name';
-                              }
-                              return null;
+                          // state
+                          JaeDropdownList(
+                            label: '',
+                            value: (model.state == null)
+                                ? JaeState.values[0].name
+                                : model.state.toString(),
+                            menus: states,
+                            changed: (String? val) {
+                              _rebuildStateInfo(val);
                             },
                           ),
                           SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
+                            //width: 50,
+                            width: MediaQuery.of(context).size.width * 0.05,
                           ),
-                          JaeTextField(
-                            controller: _lastNameController,
-                            label: 'Last Name',
-                            onSaved: (val) {
-                              model.lastName = val;
-                            },
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Enter Last Name';
-                              }
-                              return null;
+                          // branch
+                          JaeDropdownList(
+                            label: '',
+                            value: (model.branch == null)
+                                ? JaeBranch.values[0].name
+                                : model.branch.toString(),
+                            menus: branches,
+                            changed: (String? val) {
+                              _rebuildBranchInfo(val);
                             },
                           ),
                           SizedBox(
-                            // width: 30,
-                            width: MediaQuery.of(context).size.width * 0.03,
+                            // width: 50,
+                            width: MediaQuery.of(context).size.width * 0.05,
                           ),
+
+                          // JaeTextField(
+                          //   controller: _firstNameController,
+                          //   label: 'First Name',
+                          //   onSaved: (val) {
+                          //     model.firstName = val;
+                          //   },
+                          //   validator: (val) {
+                          //     if (val == null || val.isEmpty) {
+                          //       return 'Enter First Name';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          // SizedBox(
+                          //   // width: 30,
+                          //   width: MediaQuery.of(context).size.width * 0.03,
+                          // ),
+                          // JaeTextField(
+                          //   controller: _lastNameController,
+                          //   label: 'Last Name',
+                          //   onSaved: (val) {
+                          //     model.lastName = val;
+                          //   },
+                          //   validator: (val) {
+                          //     if (val == null || val.isEmpty) {
+                          //       return 'Enter Last Name';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          // SizedBox(
+                          //   // width: 30,
+                          //   width: MediaQuery.of(context).size.width * 0.03,
+                          // ),
                           JaeDropdownList(
                             label: 'Grade',
                             value: (model.grade == null)

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:orca/model/student_model.dart';
 import 'package:orca/provider/student_provider.dart';
@@ -54,6 +55,7 @@ class _StudentRegisterState extends State<StudentRegister> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<StudentProvider>(context);
+    print('rebuild @ register');
     return SingleChildScrollView(
       child: Container(
         // color: Colors.amber.shade300,

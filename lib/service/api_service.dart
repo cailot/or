@@ -87,6 +87,24 @@ class ApiService {
     }
   }
 
+  Future<List<dynamic>> searchStudent(String keyword) async {
+    final url = Uri.parse('$baseUrl/student?keyword=${keyword}');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      if (response.body.isEmpty) {
+        return [];
+      }
+      List<dynamic> data = json.decode(response.body);
+      print('Get API response: $data');
+      return data;
+    } else {
+      final errorMsg = jsonDecode(response.body)['message'];
+      print(errorMsg);
+      return []; // return empty StudentModel
+      //throw Exception('Failed to get Student');
+    }
+  }
+
   Future<List<dynamic>> getStudents(ListConditionModel model) async {
     final url = Uri.parse(
         '$baseUrl/students?state=${model.state}&branch=${model.branch}&grade=${model.grade}&year=${model.year}&active=${model.activeStudent}');
