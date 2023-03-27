@@ -29,6 +29,7 @@ class _StudentAdminState extends State<StudentAdmin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _memoController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   StudentModel model = StudentModel();
 
@@ -112,7 +113,7 @@ class _StudentAdminState extends State<StudentAdmin> {
     }
     students = result;
     // display the result set in a modal dialog
-
+    _searchController.text = '';
     AwesomeDialog(
       context: _formKey.currentContext!,
       dialogType: DialogType.noHeader,
@@ -602,6 +603,35 @@ class _StudentAdminState extends State<StudentAdmin> {
                             // width: 30,
                             width: MediaQuery.of(context).size.width * 0.03,
                           ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: const [
+                                    Text(
+                                      'Search Keyword',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // ignore: sized_box_for_whitespace
+                                TextFormField(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    filled: true,
+                                    fillColor: Colors.amber,
+                                  ),
+                                  controller: _searchController,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            // width: 30,
+                            width: MediaQuery.of(context).size.width * 0.03,
+                          ),
                           Column(
                             children: [
                               Row(
@@ -680,7 +710,7 @@ class _StudentAdminState extends State<StudentAdmin> {
                                 ),
                                 onPressed: () async {
                                   // 1. check whether ID is filled or not
-                                  if (_idController.text == '') {
+                                  if (_searchController.text == '') {
                                     _showIdWarningDialogue();
                                     return;
                                   }
@@ -690,7 +720,7 @@ class _StudentAdminState extends State<StudentAdmin> {
                                   //_formKey.currentState!.save();
                                   // 2. call get API
                                   // await _searchStudentInfo(int.parse(_idController.text));
-                                  await _searchStudent(_idController.text);
+                                  await _searchStudent(_searchController.text);
                                 },
                                 child: const Text(
                                   'Search',
