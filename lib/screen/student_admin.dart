@@ -691,7 +691,6 @@ class _StudentAdminState extends State<StudentAdmin> {
                         children: [
                           // State
                           JaeSmallDropdownList(
-                            label: 'State',
                             value: (model.state == null)
                                 ? JaeState.values[0].name
                                 : model.state.toString(),
@@ -705,7 +704,6 @@ class _StudentAdminState extends State<StudentAdmin> {
                           ),
                           // Branch
                           JaeSmallDropdownList(
-                            label: 'Branch',
                             value: (model.branch == null)
                                 ? JaeBranch.values[0].name
                                 : model.branch.toString(),
@@ -716,6 +714,17 @@ class _StudentAdminState extends State<StudentAdmin> {
                           ),
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          // Grade
+                          JaeSmallDropdownList(
+                            //label: 'Grade',
+                            value: (model.grade == null)
+                                ? JaeGrade.values[0].name
+                                : model.grade.toString(),
+                            menus: grades,
+                            changed: (String? val) {
+                              _rebuildGradeInfo(val);
+                            },
                           ),
                         ],
                       ),
@@ -732,40 +741,30 @@ class _StudentAdminState extends State<StudentAdmin> {
                         children: [
                           // ID
                           Expanded(
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: const [
-                                    Text(
-                                      'ID',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // ignore: sized_box_for_whitespace
-                                SizedBox(
-                                  height: 35,
-                                  child: TextFormField(
-                                    readOnly: true,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    onSaved: (val) {
-                                      model.id = int.parse(val!);
-                                    },
-                                    validator: (val) {
-                                      if (val == null || val.isEmpty) {
-                                        return 'Enter ID';
-                                      }
-                                      return null;
-                                    },
-                                    controller: _idController,
+                            child: SizedBox(
+                              height: 35,
+                              child: TextFormField(
+                                readOnly: true,
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: const InputDecoration(
+                                  hintText: 'ID',
+                                  hintStyle: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
                                   ),
+                                  border: OutlineInputBorder(),
                                 ),
-                              ],
+                                onSaved: (val) {
+                                  model.id = int.parse(val!);
+                                },
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Enter ID';
+                                  }
+                                  return null;
+                                },
+                                controller: _idController,
+                              ),
                             ),
                           ),
 
@@ -806,6 +805,7 @@ class _StudentAdminState extends State<StudentAdmin> {
                         ],
                       ),
                     ),
+                    /*
                     Padding(
                       padding: const EdgeInsets.only(
                         left: 2,
@@ -818,7 +818,7 @@ class _StudentAdminState extends State<StudentAdmin> {
                         children: [
                           // Grade
                           JaeSmallDropdownList(
-                            label: 'Grade',
+                            //label: 'Grade',
                             value: (model.grade == null)
                                 ? JaeGrade.values[0].name
                                 : model.grade.toString(),
@@ -847,6 +847,7 @@ class _StudentAdminState extends State<StudentAdmin> {
                         ],
                       ),
                     ),
+                    */
                     Padding(
                       padding: const EdgeInsets.only(
                         left: 2,
@@ -899,8 +900,26 @@ class _StudentAdminState extends State<StudentAdmin> {
                         top: 2,
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         // Fifth Row
                         children: [
+                          // Enrolment Date
+                          JaeSmallDatepicker(
+                            label: 'Enrolement Date',
+                            onSaved: (val) {
+                              model.enrolmentDate = JaeUtil.dateFormat(val);
+                            },
+                            validator: (val) => null,
+                            selected: selectedDate =
+                                (model.enrolmentDate == null)
+                                    ? DateFormat('yyyy-MM-dd')
+                                        .parse(DateTime.now().toString())
+                                    : DateFormat('yyyy-MM-dd')
+                                        .parse(model.enrolmentDate.toString()),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
                           // Contact No 1
                           JaeSmallTextField(
                             controller: _contact1Controller,

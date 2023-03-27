@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class JaeSmallTextField extends StatelessWidget {
-  final String label;
+  String label;
   final FormFieldSetter onSaved;
   final FormFieldValidator validator;
   TextEditingController? controller;
@@ -17,32 +17,22 @@ class JaeSmallTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          // ignore: sized_box_for_whitespace
-          SizedBox(
-            height: 35,
-            child: TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-              onSaved: onSaved,
-              validator: validator,
-              controller: controller,
+      child: SizedBox(
+        height: 35,
+        child: TextFormField(
+          textAlignVertical: TextAlignVertical.center,
+          decoration: InputDecoration(
+            hintText: label,
+            hintStyle: TextStyle(
+              fontSize: 10,
+              color: Colors.grey,
             ),
+            border: OutlineInputBorder(),
           ),
-        ],
+          onSaved: onSaved,
+          validator: validator,
+          controller: controller,
+        ),
       ),
     );
   }

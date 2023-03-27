@@ -52,6 +52,9 @@ class _JaeSmallDatepickerState extends State<JaeSmallDatepicker> {
             height: 35,
             //scrollDirection: Axis.horizontal,
             child: TextFormField(
+              style: TextStyle(
+                fontSize: 11,
+              ),
               controller: controller,
               decoration: const InputDecoration(
                 hintText: 'Select Date',

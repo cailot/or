@@ -18,31 +18,20 @@ class JaeSmallTextArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: label,
+          hintStyle: TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
           ),
-          // ignore: sized_box_for_whitespace
-          TextFormField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-            ),
-            onSaved: onSaved,
-            validator: validator,
-            maxLines: 3,
-            //initialValue: initial,
-            controller: controller,
-          ),
-        ],
+          border: OutlineInputBorder(),
+        ),
+        onSaved: onSaved,
+        validator: validator,
+        maxLines: 2,
+        //initialValue: initial,
+        controller: controller,
       ),
     );
   }
